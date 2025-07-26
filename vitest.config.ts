@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   test: {
     environment: 'jsdom',
-    globals: true,
+    globals: false, // Use explicit imports for better TypeScript support
     setupFiles: './src/test/setup.ts',
     include: ['src/**/*.test.{ts,tsx}'],
   },
