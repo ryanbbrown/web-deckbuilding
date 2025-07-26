@@ -1,5 +1,4 @@
 import { login } from '@/features/login/services/auth-service';
-import { describe, it, expect } from 'vitest';
 
 describe('login', () => {
   it('should return true on successful login', async () => {

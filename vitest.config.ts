@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   test: {
     environment: 'jsdom',
-    globals: false, // Use explicit imports for better TypeScript support
+    globals: true, // Required for @testing-library/jest-dom compatibility
     setupFiles: './src/test/setup.ts',
     include: ['src/**/*.test.{ts,tsx}'],
   },
