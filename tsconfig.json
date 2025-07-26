@@ -14,7 +14,7 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "types": ["node"],
+    "types": ["node", "vitest"],
     "jsx": "react-jsx",
     "baseUrl": "src",
     "paths": {
