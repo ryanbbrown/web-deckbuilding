@@ -1,45 +1,8 @@
-import { CardDefinition, Zone } from '../../cards/types';
-import { createCardInstance } from '../../cards/services';
-import { createMarket, addCardDefinition } from '../../market/services';
-import { registerCard, shuffleDeck } from '../../player/services';
+import { CardDefinition } from '../../cards/types';
+import { shuffleDeck } from '../../player/services';
 import { Player } from '../../player/types';
 import { Game } from '../types';
-
-export function createGame(): Game {
-  return {
-    market: createMarket(),
-    players: [],
-    startingDeckComposition: null,
-    startingHandSize: 5,
-  };
-}
-
-export function addCardToMarket(
-  game: Game,
-  cardDefinition: CardDefinition
-): Game {
-  return {
-    ...game,
-    market: addCardDefinition(game.market, cardDefinition),
-  };
-}
-
-export function setStartingDeckComposition(
-  game: Game,
-  composition: Record<string, number>
-): Game {
-  return {
-    ...game,
-    startingDeckComposition: composition,
-  };
-}
-
-export function setStartingHandSize(game: Game, size: number): Game {
-  return {
-    ...game,
-    startingHandSize: size,
-  };
-}
+import { setupPlayerDeck } from '../../../lib/player-utils';
 
 export function addPlayer(
   game: Game,
@@ -50,43 +13,24 @@ export function addPlayer(
     return { game, success: false };
   }
 
-  const cardDefMap = new Map(cardDefinitions.map((def) => [def.uid, def]));
-  let updatedPlayer = player;
-
-  for (const [cardDefUid, count] of Object.entries(
-    game.startingDeckComposition
-  )) {
-    const cardDef = cardDefMap.get(cardDefUid);
-    if (!cardDef) {
-      return { game, success: false };
-    }
-
-    for (let i = 0; i < count; i++) {
-      const cardInstance = createCardInstance(cardDef);
-      updatedPlayer = registerCard(updatedPlayer, cardInstance, Zone.DECK);
-    }
+  // Set up player deck using utility
+  const deckResult = setupPlayerDeck(
+    player,
+    game.startingDeckComposition,
+    cardDefinitions
+  );
+  if (!deckResult.success) {
+    return { game, success: false };
   }
 
-  updatedPlayer = shuffleDeck(updatedPlayer);
+  // Shuffle the deck
+  const shuffledPlayer = shuffleDeck(deckResult.player);
 
   return {
     game: {
       ...game,
-      players: [...game.players, updatedPlayer],
+      players: [...game.players, shuffledPlayer],
     },
     success: true,
   };
-}
-
-export function updatePlayer(game: Game, updatedPlayer: Player): Game {
-  return {
-    ...game,
-    players: game.players.map((p) =>
-      p.playerId === updatedPlayer.playerId ? updatedPlayer : p
-    ),
-  };
-}
-
-export function getPlayer(game: Game, playerId: string): Player | null {
-  return game.players.find((p) => p.playerId === playerId) || null;
 }
