@@ -1,6 +1,6 @@
 import { CardInstance, Zone } from '../../cards/types';
-import { setCardOwner, moveCardToZone } from '../../cards/services';
 import { Player } from '../types';
+import { moveCardBetweenZones } from '../../../lib/player-utils';
 
 export function createPlayer(name: string): Player {
   return {
@@ -12,89 +12,6 @@ export function createPlayer(name: string): Player {
     played: [],
     discard: [],
   };
-}
-
-export function registerCard(
-  player: Player,
-  card: CardInstance,
-  initialZone: Zone = Zone.DISCARD
-): Player {
-  const ownedCard = setCardOwner(card, player.playerId);
-  const zonedCard = moveCardToZone(ownedCard, initialZone);
-
-  const updatedPlayer = {
-    ...player,
-    allCards: [...player.allCards, zonedCard],
-  };
-
-  switch (initialZone) {
-    case Zone.DECK:
-      return { ...updatedPlayer, deck: [...player.deck, zonedCard] };
-    case Zone.HAND:
-      return { ...updatedPlayer, hand: [...player.hand, zonedCard] };
-    case Zone.PLAYED:
-      return { ...updatedPlayer, played: [...player.played, zonedCard] };
-    case Zone.DISCARD:
-      return { ...updatedPlayer, discard: [...player.discard, zonedCard] };
-    default:
-      return updatedPlayer;
-  }
-}
-
-function moveCardBetweenZones(
-  player: Player,
-  card: CardInstance,
-  fromZone: Zone,
-  toZone: Zone
-): Player {
-  const movedCard = moveCardToZone(card, toZone);
-
-  const removeFromZone = (cards: CardInstance[]): CardInstance[] =>
-    cards.filter((c) => c.instanceId !== card.instanceId);
-
-  const addToZone = (cards: CardInstance[]): CardInstance[] => [
-    ...cards,
-    movedCard,
-  ];
-
-  let updatedPlayer = {
-    ...player,
-    allCards: player.allCards.map((c) =>
-      c.instanceId === card.instanceId ? movedCard : c
-    ),
-  };
-
-  switch (fromZone) {
-    case Zone.DECK:
-      updatedPlayer.deck = removeFromZone(player.deck);
-      break;
-    case Zone.HAND:
-      updatedPlayer.hand = removeFromZone(player.hand);
-      break;
-    case Zone.PLAYED:
-      updatedPlayer.played = removeFromZone(player.played);
-      break;
-    case Zone.DISCARD:
-      updatedPlayer.discard = removeFromZone(player.discard);
-      break;
-  }
-
-  switch (toZone) {
-    case Zone.DECK:
-      updatedPlayer.deck = addToZone(updatedPlayer.deck);
-      break;
-    case Zone.HAND:
-      updatedPlayer.hand = addToZone(updatedPlayer.hand);
-      break;
-    case Zone.PLAYED:
-      updatedPlayer.played = addToZone(updatedPlayer.played);
-      break;
-    case Zone.DISCARD:
-      updatedPlayer.discard = addToZone(updatedPlayer.discard);
-      break;
-  }
-
-  return updatedPlayer;
 }
 
 export function shuffleDeck(player: Player): Player {
