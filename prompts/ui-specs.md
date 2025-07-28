@@ -1,36 +1,93 @@
-## Elements
+# UI Implementation Specs - V2
+When implementing each high-level todo, make sure to refer back to this document for the more detailed description.
 
-### Market
+## Game Initialization
+- [ ] Create initial game setup
+  - Call `useGameStore().createGame()` on app start
+  - Initialize empty market and player areas
 
-Wide rectangle container at the top of the app. This is where market cards are stored. By default it is empty.
+## Market Section
 
-To the right of the container, there are two clickable cards, one above the other (two rows):
+### Market Container
+- [ ] Implement market display area
+  - Wide rectangle container at top of screen
+  - Display cards using `useMarketStore().getMarketCards()`
+  - Show empty state when no cards exist
 
-- **Card 1 (top) - Add card to market**: When clicked, it creates a new blank card in the market. There are three fields to fill out: name, text, and cost. Once filled, the player can click “save”, at which point the card is now in the market.
-- **Card 2 (bottom) - Set starting deck composition**: When clicked, it should say “select cards to add to starting deck composition”. Then, you can click cards in the market, which will show up in the card as “[Card Name] - [Quantity]” rows. Clicking a card in the market more than once increases the quantity. After editing has initiated, there should be a “save” button on the bottom of the card that finalizes the operation. At that point, the card should show the “[Card Name] - [Quantity]” rows.
+### Market Actions Panel
+- [ ] Create "Add Card to Market" functionality
+  - Button/card to the right of the market
+  - Modal/form with fields: name, text, cost
+  - On save: call `useGameStore().addCardToMarket(cardDefinition)`
 
-### Players
+- [ ] Create "Set Starting Deck Composition" functionality
+  - Button/card below add card button
+  - Click to enter selection mode
+  - Allow clicking market cards to increment quantities
+  - Display selected cards as "[Card Name] - [Quantity]" rows
+  - Save button calls `useGameStore().setStartingDeckComposition(composition)`
 
-At the bottom of the screen, there’s a large rectangle container with a plus sign in the middle and the text “add player”. Once clicked, it does the add player action (giving them starting deck, etc.)
+## Player Management
 
-Once a player is created, it’s the same large rectangle container with the following elements:
+### Add Player
+- [ ] Implement add player interface
+  - Large rectangle container with plus icon and "add player" text
+  - On click: create new player and call `useGameStore().addPlayerToGame(player, cardDefinitions)`
+  - Use current starting deck composition for new player
 
-- **Deck**: Bottom left corner, looks like a stack of cards. When clicked, performs drawCard action.
-- **DrawHand Button**: small button (as wide as deck but not very tell) that says “Draw hand” and performs the drawhand action.
-- **Hand**: Wide rectangle container to the right of deck, contains the cards in the player’s hand.
-- **Play Area**: identical wide rectangle container above hand, contains cards that are “in play”.
-- **Discard**: Card-shaped rectangle container above the deck, looks like a stack of cards, shows the details of the most recently discarded card.
+### Player Interface Layout
+- [ ] Create player container layout
+  - Replace add player interface with player controls once player exists
+  - Position deck, hand, play area, and discard pile as specified
 
-For cards in hand or in play, clicking on the card will pop up a small menu (relative to card position) with two options: “move to X” or “move to Y”, where X and Y are the two **other** zones of {hand, play, discard}.
+### Player Actions
+- [ ] Implement deck interaction
+  - Deck display (bottom-left): stack of cards visual
+  - Click deck: call `usePlayerStore().drawPlayerCard(playerId)`
 
-Players can click and drag cards from the market to their overall player container; upon release, the card will be added to their discard pile.
+- [ ] Implement draw hand functionality
+  - Small button below deck labeled "Draw hand" 
+  - On click: call `usePlayerStore().drawPlayerHand(playerId, handSize)` using game's starting hand size
 
+- [ ] Create hand display area
+  - Wide rectangle container right of deck
+  - Display cards from player's hand zone
+  - Show individual card instances
 
-## Style
+- [ ] Create play area display
+  - Wide rectangle container above hand area
+  - Display cards from player's play zone
+  - Show individual card instances
 
-Two Core UI elements: containers and cards.
+- [ ] Create discard pile display
+  - Card-shaped container above deck
+  - Show most recently discarded card details
+  - Visual stack appearance
 
-- Card: white background, light grey rounded rectangles with slightly darker light grey outline and shadow.
-- Container: Just light grey outline (same color as card), otherwise empty (white background, no shadow)
+### Card Movement
+- [ ] Implement card context menu
+  - On click card in hand/play: show menu with move optionsß
+  - Menu options: "Move to [other zones]" (hand, play, discard)
+  - Execute: call `usePlayerStore().moveCardBetweenZones(playerId, card, fromZone, toZone)`
 
-Note that this style / coloring is meant to be similar to github.
+- [ ] Implement drag-and-drop from market
+  - Allow dragging cards from market to player containers
+  - On drop: call `usePlayerStore().registerCard(playerId, cardInstance, Zone.DISCARD)`
+
+## Styling Guidelines
+- [ ] Apply consistent card styling
+  - White background with light grey rounded borders
+  - Slightly darker grey outline and drop shadow
+  - Github-like appearance
+
+- [ ] Apply consistent container styling  
+  - Light grey outline borders only
+  - White background, no shadows
+  - Clean, minimal appearance
+
+## Data Integration
+- [ ] Connect store state to UI
+  - Use `useGameStore().getAllPlayers()` for player list
+  - Use `useMarketStore().getMarketCards()` for market display
+  - Use `usePlayerStore().getPlayer(playerId)` for individual player data
+  - Update UI reactively when store state changes 
