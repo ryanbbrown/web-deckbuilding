@@ -30,6 +30,7 @@ function App() {
   const moveCardBetweenZones = usePlayerStore(
     (state) => state.moveCardBetweenZones
   );
+  const trashPlayerCard = usePlayerStore((state) => state.trashPlayerCard);
   const registerCard = usePlayerStore((state) => state.registerCard);
 
   // Modal and form state
@@ -261,6 +262,33 @@ function App() {
     }
   };
 
+  const handleTrashCard = () => {
+    if (!selectedCard) return;
+
+    try {
+      const success = trashPlayerCard(
+        selectedCard.playerId,
+        selectedCard.card,
+        selectedCard.currentZone
+      );
+      if (success) {
+        console.log(
+          `Trashed card from ${selectedCard.currentZone}:`,
+          selectedCard.card
+        );
+        setShowCardMenu(false);
+        setSelectedCard(null);
+      } else {
+        showError(
+          'Failed to trash card. Card may not be in a valid zone for trashing.'
+        );
+      }
+    } catch (error) {
+      console.error('Error trashing card:', error);
+      showError('Failed to trash card. Check console for details.');
+    }
+  };
+
   const handleCloseCardMenu = () => {
     setShowCardMenu(false);
     setSelectedCard(null);
@@ -426,6 +454,7 @@ function App() {
         <CardContextMenu
           selectedCard={selectedCard}
           onMoveCard={handleMoveCard}
+          onTrashCard={handleTrashCard}
           onClose={handleCloseCardMenu}
         />
       )}
