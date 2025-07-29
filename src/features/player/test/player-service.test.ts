@@ -10,6 +10,7 @@ import {
   discardCard,
   discardAllInPlay,
   discardAllInHand,
+  trashCard,
 } from '../services';
 import usePlayerStore from '../../../store/player-store';
 
@@ -377,6 +378,162 @@ describe('Player Service', () => {
 
       expect(updatedPlayer.hand).toHaveLength(0);
       expect(updatedPlayer.discard).toHaveLength(0);
+    });
+  });
+
+  describe('trashCard', () => {
+    it('should completely remove a card from hand', () => {
+      const player = createPlayer('Test Player');
+      const cardDef = createCardDefinition('Test Card', 'Test text');
+      const cardInstance = createCardInstance(cardDef);
+
+      usePlayerStore.getState().reset();
+      usePlayerStore.getState().addPlayer(player);
+      usePlayerStore
+        .getState()
+        .registerCard(player.playerId, cardInstance, Zone.HAND);
+
+      const currentPlayer = usePlayerStore
+        .getState()
+        .getPlayer(player.playerId)!;
+      const result = trashCard(currentPlayer, currentPlayer.hand[0], Zone.HAND);
+
+      expect(result.success).toBe(true);
+      expect(result.player.hand).toHaveLength(0);
+      expect(result.player.allCards).toHaveLength(0);
+      expect(result.player.deck).toHaveLength(0);
+      expect(result.player.played).toHaveLength(0);
+      expect(result.player.discard).toHaveLength(0);
+    });
+
+    it('should completely remove a card from played area', () => {
+      const player = createPlayer('Test Player');
+      const cardDef = createCardDefinition('Test Card', 'Test text');
+      const cardInstance = createCardInstance(cardDef);
+
+      usePlayerStore.getState().reset();
+      usePlayerStore.getState().addPlayer(player);
+      usePlayerStore
+        .getState()
+        .registerCard(player.playerId, cardInstance, Zone.PLAYED);
+
+      const currentPlayer = usePlayerStore
+        .getState()
+        .getPlayer(player.playerId)!;
+      const result = trashCard(
+        currentPlayer,
+        currentPlayer.played[0],
+        Zone.PLAYED
+      );
+
+      expect(result.success).toBe(true);
+      expect(result.player.played).toHaveLength(0);
+      expect(result.player.allCards).toHaveLength(0);
+    });
+
+    it('should return false when trying to trash from deck', () => {
+      const player = createPlayer('Test Player');
+      const cardDef = createCardDefinition('Test Card', 'Test text');
+      const cardInstance = createCardInstance(cardDef);
+
+      usePlayerStore.getState().reset();
+      usePlayerStore.getState().addPlayer(player);
+      usePlayerStore
+        .getState()
+        .registerCard(player.playerId, cardInstance, Zone.DECK);
+
+      const currentPlayer = usePlayerStore
+        .getState()
+        .getPlayer(player.playerId)!;
+      const result = trashCard(currentPlayer, currentPlayer.deck[0], Zone.DECK);
+
+      expect(result.success).toBe(false);
+      expect(result.player).toBe(currentPlayer);
+      expect(result.player.deck).toHaveLength(1);
+      expect(result.player.allCards).toHaveLength(1);
+    });
+
+    it('should completely remove a card from discard pile', () => {
+      const player = createPlayer('Test Player');
+      const cardDef = createCardDefinition('Test Card', 'Test text');
+      const cardInstance = createCardInstance(cardDef);
+
+      usePlayerStore.getState().reset();
+      usePlayerStore.getState().addPlayer(player);
+      usePlayerStore
+        .getState()
+        .registerCard(player.playerId, cardInstance, Zone.DISCARD);
+
+      const currentPlayer = usePlayerStore
+        .getState()
+        .getPlayer(player.playerId)!;
+      const result = trashCard(
+        currentPlayer,
+        currentPlayer.discard[0],
+        Zone.DISCARD
+      );
+
+      expect(result.success).toBe(true);
+      expect(result.player.discard).toHaveLength(0);
+      expect(result.player.allCards).toHaveLength(0);
+    });
+
+    it('should return false if card not in specified zone', () => {
+      const player = createPlayer('Test Player');
+      const cardDef = createCardDefinition('Test Card', 'Test text');
+      const cardInstance = createCardInstance(cardDef);
+
+      usePlayerStore.getState().reset();
+      usePlayerStore.getState().addPlayer(player);
+      usePlayerStore
+        .getState()
+        .registerCard(player.playerId, cardInstance, Zone.DECK);
+
+      const currentPlayer = usePlayerStore
+        .getState()
+        .getPlayer(player.playerId)!;
+      const result = trashCard(currentPlayer, currentPlayer.deck[0], Zone.HAND);
+
+      expect(result.success).toBe(false);
+      expect(result.player).toBe(currentPlayer);
+    });
+
+    it('should return false when trying to trash from market zone', () => {
+      const player = createPlayer('Test Player');
+      const cardDef = createCardDefinition('Test Card', 'Test text');
+      const cardInstance = createCardInstance(cardDef);
+
+      const result = trashCard(player, cardInstance, Zone.MARKET);
+
+      expect(result.success).toBe(false);
+      expect(result.player).toBe(player);
+    });
+
+    it('should preserve other cards when trashing one card', () => {
+      const player = createPlayer('Test Player');
+      const cardDef1 = createCardDefinition('Card 1', 'Text 1');
+      const cardDef2 = createCardDefinition('Card 2', 'Text 2');
+      const cardInstance1 = createCardInstance(cardDef1);
+      const cardInstance2 = createCardInstance(cardDef2);
+
+      usePlayerStore.getState().reset();
+      usePlayerStore.getState().addPlayer(player);
+      usePlayerStore
+        .getState()
+        .registerCard(player.playerId, cardInstance1, Zone.HAND);
+      usePlayerStore
+        .getState()
+        .registerCard(player.playerId, cardInstance2, Zone.HAND);
+
+      const currentPlayer = usePlayerStore
+        .getState()
+        .getPlayer(player.playerId)!;
+      const result = trashCard(currentPlayer, currentPlayer.hand[0], Zone.HAND);
+
+      expect(result.success).toBe(true);
+      expect(result.player.hand).toHaveLength(1);
+      expect(result.player.allCards).toHaveLength(1);
+      expect(result.player.hand[0].definition.name).toBe('Card 2');
     });
   });
 });

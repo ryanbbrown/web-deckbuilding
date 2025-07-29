@@ -151,3 +151,59 @@ export function discardAllInHand(player: Player): Player {
 
   return updatedPlayer;
 }
+
+export function trashCard(
+  player: Player,
+  card: CardInstance,
+  fromZone: Zone
+): { player: Player; success: boolean } {
+  // Cards can only be trashed from hand, played area, or discard pile
+  if (fromZone === Zone.DECK || fromZone === Zone.MARKET) {
+    return { player, success: false };
+  }
+
+  // Get the zone cards based on fromZone
+  let zoneCards: CardInstance[];
+  switch (fromZone) {
+    case Zone.HAND:
+      zoneCards = player.hand;
+      break;
+    case Zone.PLAYED:
+      zoneCards = player.played;
+      break;
+    case Zone.DISCARD:
+      zoneCards = player.discard;
+      break;
+    default:
+      return { player, success: false };
+  }
+
+  // Check if card exists in the specified zone
+  if (!zoneCards.some((c) => c.instanceId === card.instanceId)) {
+    return { player, success: false };
+  }
+
+  // Remove card from player entirely
+  const removeFromZone = (cards: CardInstance[]): CardInstance[] =>
+    cards.filter((c) => c.instanceId !== card.instanceId);
+
+  let updatedPlayer = {
+    ...player,
+    allCards: player.allCards.filter((c) => c.instanceId !== card.instanceId),
+  };
+
+  // Remove from source zone
+  switch (fromZone) {
+    case Zone.HAND:
+      updatedPlayer.hand = removeFromZone(player.hand);
+      break;
+    case Zone.PLAYED:
+      updatedPlayer.played = removeFromZone(player.played);
+      break;
+    case Zone.DISCARD:
+      updatedPlayer.discard = removeFromZone(player.discard);
+      break;
+  }
+
+  return { player: updatedPlayer, success: true };
+}
