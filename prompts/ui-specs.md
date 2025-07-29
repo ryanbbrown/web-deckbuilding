@@ -1,12 +1,23 @@
 # UI Implementation Specs - V2
 When implementing each high-level todo, make sure to refer back to this document for the more detailed description.
 
-## Game Initialization
+After each todo, use the browser MCP to confirm that it looks and functions as expected.
+
+## Data Integration
+- Connect store state to UI as the features below are developed.
+  - Use `useGameStore().getAllPlayers()` for player list
+  - Use `useMarketStore().getMarketCards()` for market display
+  - Use `usePlayerStore().getPlayer(playerId)` for individual player data
+  - Update UI reactively when store state changes 
+
+
+
+## Game + Market Functionality
+
+### Game Initialization
 - [ ] Create initial game setup
   - Call `useGameStore().createGame()` on app start
   - Initialize empty market and player areas
-
-## Market Section
 
 ### Market Container
 - [ ] Implement market display area
@@ -26,6 +37,10 @@ When implementing each high-level todo, make sure to refer back to this document
   - Allow clicking market cards to increment quantities
   - Display selected cards as "[Card Name] - [Quantity]" rows
   - Save button calls `useGameStore().setStartingDeckComposition(composition)`
+
+### Testing
+- [ ] Write vitest tests for each front-end component and playwright E2E testing for game + market functionality
+
 
 ## Player Management
 
@@ -74,6 +89,11 @@ When implementing each high-level todo, make sure to refer back to this document
   - Allow dragging cards from market to player containers
   - On drop: call `usePlayerStore().registerCard(playerId, cardInstance, Zone.DISCARD)`
 
+### Testing
+- [ ] Write vitest tests for each front-end component and playwright E2E testing for player creation functionality
+
+
+
 ## Styling Guidelines
 - [ ] Apply consistent card styling
   - White background with light grey rounded borders
@@ -84,10 +104,3 @@ When implementing each high-level todo, make sure to refer back to this document
   - Light grey outline borders only
   - White background, no shadows
   - Clean, minimal appearance
-
-## Data Integration
-- [ ] Connect store state to UI
-  - Use `useGameStore().getAllPlayers()` for player list
-  - Use `useMarketStore().getMarketCards()` for market display
-  - Use `usePlayerStore().getPlayer(playerId)` for individual player data
-  - Update UI reactively when store state changes 
