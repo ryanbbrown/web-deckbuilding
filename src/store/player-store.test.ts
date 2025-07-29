@@ -334,5 +334,109 @@ describe('Player Store', () => {
         expect(shuffledOrder).not.toEqual(originalOrder);
       });
     });
+
+    describe('trashPlayerCard', () => {
+      it('should completely remove a card from hand', () => {
+        const player = createPlayer('Test Player');
+        const cardDef = createCardDefinition('Test Card', 'Test text');
+        const cardInstance = createCardInstance(cardDef);
+        const { addPlayer, registerCard, trashPlayerCard, getPlayer } =
+          usePlayerStore.getState();
+
+        addPlayer(player);
+        registerCard(player.playerId, cardInstance, Zone.HAND);
+
+        const currentPlayer = getPlayer(player.playerId)!;
+        const card = currentPlayer.hand[0];
+
+        const success = trashPlayerCard(player.playerId, card, Zone.HAND);
+
+        expect(success).toBe(true);
+
+        const updatedPlayer = getPlayer(player.playerId)!;
+        expect(updatedPlayer.hand).toHaveLength(0);
+        expect(updatedPlayer.allCards).toHaveLength(0);
+      });
+
+      it('should completely remove a card from played area', () => {
+        const player = createPlayer('Test Player');
+        const cardDef = createCardDefinition('Test Card', 'Test text');
+        const cardInstance = createCardInstance(cardDef);
+        const { addPlayer, registerCard, trashPlayerCard, getPlayer } =
+          usePlayerStore.getState();
+
+        addPlayer(player);
+        registerCard(player.playerId, cardInstance, Zone.PLAYED);
+
+        const currentPlayer = getPlayer(player.playerId)!;
+        const card = currentPlayer.played[0];
+
+        const success = trashPlayerCard(player.playerId, card, Zone.PLAYED);
+
+        expect(success).toBe(true);
+
+        const updatedPlayer = getPlayer(player.playerId)!;
+        expect(updatedPlayer.played).toHaveLength(0);
+        expect(updatedPlayer.allCards).toHaveLength(0);
+      });
+
+      it('should return false for non-existent player', () => {
+        const cardDef = createCardDefinition('Test Card', 'Test text');
+        const cardInstance = createCardInstance(cardDef);
+        const { trashPlayerCard } = usePlayerStore.getState();
+
+        const success = trashPlayerCard(
+          'non-existent',
+          cardInstance,
+          Zone.HAND
+        );
+
+        expect(success).toBe(false);
+      });
+
+      it('should return false if card not in specified zone', () => {
+        const player = createPlayer('Test Player');
+        const cardDef = createCardDefinition('Test Card', 'Test text');
+        const cardInstance = createCardInstance(cardDef);
+        const { addPlayer, registerCard, trashPlayerCard, getPlayer } =
+          usePlayerStore.getState();
+
+        addPlayer(player);
+        registerCard(player.playerId, cardInstance, Zone.HAND);
+
+        const currentPlayer = getPlayer(player.playerId)!;
+        const card = currentPlayer.hand[0];
+
+        const success = trashPlayerCard(player.playerId, card, Zone.PLAYED);
+
+        expect(success).toBe(false);
+
+        const unchangedPlayer = getPlayer(player.playerId)!;
+        expect(unchangedPlayer.hand).toHaveLength(1);
+        expect(unchangedPlayer.allCards).toHaveLength(1);
+      });
+
+      it('should return false when trying to trash from deck', () => {
+        const player = createPlayer('Test Player');
+        const cardDef = createCardDefinition('Test Card', 'Test text');
+        const cardInstance = createCardInstance(cardDef);
+        const { addPlayer, registerCard, trashPlayerCard, getPlayer } =
+          usePlayerStore.getState();
+
+        addPlayer(player);
+        registerCard(player.playerId, cardInstance, Zone.DECK);
+
+        const currentPlayer = getPlayer(player.playerId)!;
+        const card = currentPlayer.deck[0];
+
+        const success = trashPlayerCard(player.playerId, card, Zone.DECK);
+
+        expect(success).toBe(false);
+
+        const unchangedPlayer = getPlayer(player.playerId)!;
+        expect(unchangedPlayer.deck).toHaveLength(1);
+        expect(unchangedPlayer.allCards).toHaveLength(1);
+      });
+    });
   });
 });
