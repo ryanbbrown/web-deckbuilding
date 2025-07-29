@@ -27,6 +27,7 @@ describe('CardContextMenu Component', () => {
   const defaultProps = {
     selectedCard: baseSelectedCard,
     onMoveCard: vi.fn(),
+    onTrashCard: vi.fn(),
     onClose: vi.fn(),
   };
 
@@ -169,6 +170,75 @@ describe('CardContextMenu Component', () => {
       expect(screen.queryByText('Return to Hand')).not.toBeInTheDocument();
     });
 
+    it('shows Trash Card option when card is in HAND zone', () => {
+      const selectedCardInHand = {
+        ...baseSelectedCard,
+        currentZone: Zone.HAND,
+      };
+
+      render(
+        <CardContextMenu {...defaultProps} selectedCard={selectedCardInHand} />
+      );
+      expect(screen.getByText('Trash Card')).toBeInTheDocument();
+    });
+
+    it('shows Trash Card option when card is in PLAYED zone', () => {
+      const selectedCardInPlayed = {
+        ...baseSelectedCard,
+        currentZone: Zone.PLAYED,
+      };
+
+      render(
+        <CardContextMenu
+          {...defaultProps}
+          selectedCard={selectedCardInPlayed}
+        />
+      );
+      expect(screen.getByText('Trash Card')).toBeInTheDocument();
+    });
+
+    it('does not show Trash Card option when card is in DECK zone', () => {
+      const selectedCardInDeck = {
+        ...baseSelectedCard,
+        currentZone: Zone.DECK,
+      };
+
+      render(
+        <CardContextMenu {...defaultProps} selectedCard={selectedCardInDeck} />
+      );
+      expect(screen.queryByText('Trash Card')).not.toBeInTheDocument();
+    });
+
+    it('does not show Trash Card option when card is in DISCARD zone', () => {
+      const selectedCardInDiscard = {
+        ...baseSelectedCard,
+        currentZone: Zone.DISCARD,
+      };
+
+      render(
+        <CardContextMenu
+          {...defaultProps}
+          selectedCard={selectedCardInDiscard}
+        />
+      );
+      expect(screen.queryByText('Trash Card')).not.toBeInTheDocument();
+    });
+
+    it('does not show Trash Card option when card is in MARKET zone', () => {
+      const selectedCardInMarket = {
+        ...baseSelectedCard,
+        currentZone: Zone.MARKET,
+      };
+
+      render(
+        <CardContextMenu
+          {...defaultProps}
+          selectedCard={selectedCardInMarket}
+        />
+      );
+      expect(screen.queryByText('Trash Card')).not.toBeInTheDocument();
+    });
+
     it('always shows Cancel option', () => {
       render(<CardContextMenu {...defaultProps} />);
       expect(screen.getByText('Cancel')).toBeInTheDocument();
@@ -189,6 +259,7 @@ describe('CardContextMenu Component', () => {
       expect(screen.getByText('Play Card')).toBeInTheDocument();
       expect(screen.getByText('Discard Card')).toBeInTheDocument();
       expect(screen.queryByText('Return to Hand')).not.toBeInTheDocument();
+      expect(screen.getByText('Trash Card')).toBeInTheDocument();
       expect(screen.getByText('Cancel')).toBeInTheDocument();
     });
 
@@ -208,6 +279,7 @@ describe('CardContextMenu Component', () => {
       expect(screen.queryByText('Play Card')).not.toBeInTheDocument();
       expect(screen.getByText('Discard Card')).toBeInTheDocument();
       expect(screen.getByText('Return to Hand')).toBeInTheDocument();
+      expect(screen.getByText('Trash Card')).toBeInTheDocument();
       expect(screen.getByText('Cancel')).toBeInTheDocument();
     });
 
@@ -227,6 +299,7 @@ describe('CardContextMenu Component', () => {
       expect(screen.getByText('Play Card')).toBeInTheDocument();
       expect(screen.queryByText('Discard Card')).not.toBeInTheDocument();
       expect(screen.getByText('Return to Hand')).toBeInTheDocument();
+      expect(screen.queryByText('Trash Card')).not.toBeInTheDocument();
       expect(screen.getByText('Cancel')).toBeInTheDocument();
     });
 
@@ -243,6 +316,7 @@ describe('CardContextMenu Component', () => {
       expect(screen.getByText('Play Card')).toBeInTheDocument();
       expect(screen.getByText('Discard Card')).toBeInTheDocument();
       expect(screen.getByText('Return to Hand')).toBeInTheDocument();
+      expect(screen.queryByText('Trash Card')).not.toBeInTheDocument();
       expect(screen.getByText('Cancel')).toBeInTheDocument();
     });
   });
@@ -297,6 +371,20 @@ describe('CardContextMenu Component', () => {
       expect(mockOnMoveCard).toHaveBeenCalledTimes(1);
     });
 
+    it('calls onTrashCard when Trash Card is clicked', async () => {
+      const user = userEvent.setup();
+      const mockOnTrashCard = vi.fn();
+
+      render(
+        <CardContextMenu {...defaultProps} onTrashCard={mockOnTrashCard} />
+      );
+
+      const trashCardButton = screen.getByText('Trash Card');
+      await user.click(trashCardButton);
+
+      expect(mockOnTrashCard).toHaveBeenCalledTimes(1);
+    });
+
     it('calls onClose when Cancel is clicked', async () => {
       const user = userEvent.setup();
       const mockOnClose = vi.fn();
@@ -319,6 +407,20 @@ describe('CardContextMenu Component', () => {
       await user.click(cancelButton);
 
       expect(mockOnMoveCard).not.toHaveBeenCalled();
+    });
+
+    it('does not call onTrashCard when Cancel is clicked', async () => {
+      const user = userEvent.setup();
+      const mockOnTrashCard = vi.fn();
+
+      render(
+        <CardContextMenu {...defaultProps} onTrashCard={mockOnTrashCard} />
+      );
+
+      const cancelButton = screen.getByText('Cancel');
+      await user.click(cancelButton);
+
+      expect(mockOnTrashCard).not.toHaveBeenCalled();
     });
   });
 
@@ -398,6 +500,9 @@ describe('CardContextMenu Component', () => {
         screen.getByRole('button', { name: 'Discard Card' })
       ).toBeInTheDocument();
       expect(
+        screen.getByRole('button', { name: 'Trash Card' })
+      ).toBeInTheDocument();
+      expect(
         screen.getByRole('button', { name: 'Cancel' })
       ).toBeInTheDocument();
     });
@@ -421,6 +526,7 @@ describe('CardContextMenu Component', () => {
       expect(screen.getByText('Play Card')).toBeInTheDocument();
       expect(screen.getByText('Discard Card')).toBeInTheDocument();
       expect(screen.getByText('Return to Hand')).toBeInTheDocument();
+      expect(screen.queryByText('Trash Card')).not.toBeInTheDocument();
       expect(screen.getByText('Cancel')).toBeInTheDocument();
     });
 

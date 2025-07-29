@@ -11,12 +11,14 @@ interface SelectedCard {
 interface CardContextMenuProps {
   selectedCard: SelectedCard;
   onMoveCard: (toZone: Zone) => void;
+  onTrashCard: () => void;
   onClose: () => void;
 }
 
 export function CardContextMenu({
   selectedCard,
   onMoveCard,
+  onTrashCard,
   onClose,
 }: CardContextMenuProps) {
   return (
@@ -49,6 +51,15 @@ export function CardContextMenu({
           className="block w-full text-left text-sm text-gray-700 hover:bg-gray-100 p-2 rounded-md mb-1"
         >
           Return to Hand
+        </button>
+      )}
+      {(selectedCard.currentZone === Zone.HAND ||
+        selectedCard.currentZone === Zone.PLAYED) && (
+        <button
+          onClick={onTrashCard}
+          className="block w-full text-left text-sm text-red-700 hover:bg-red-50 p-2 rounded-md mb-1"
+        >
+          Trash Card
         </button>
       )}
       <button
