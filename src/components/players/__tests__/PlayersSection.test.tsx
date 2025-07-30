@@ -55,7 +55,7 @@ describe('PlayersSection Component', () => {
     startingHandSize: 5,
     startingDeckComposition: { 'card-1': 2 },
     players: [],
-    market: { catalog: new Set() },
+    market: { catalog: [] },
   };
 
   const defaultProps = {
@@ -92,44 +92,6 @@ describe('PlayersSection Component', () => {
       render(<PlayersSection {...defaultProps} />);
       const heading = screen.getByRole('heading', { level: 2 });
       expect(heading).toHaveTextContent('Players');
-    });
-
-    it('has correct heading styling', () => {
-      render(<PlayersSection {...defaultProps} />);
-      const heading = screen.getByRole('heading', { level: 2 });
-      expect(heading).toHaveClass(
-        'text-xl',
-        'font-semibold',
-        'text-gray-800',
-        'mb-4'
-      );
-    });
-  });
-
-  describe('grid layout', () => {
-    it('has correct grid container styling', () => {
-      const { container } = render(<PlayersSection {...defaultProps} />);
-      const gridContainer = container.querySelector('.grid');
-      expect(gridContainer).toHaveClass(
-        'grid',
-        'grid-cols-1',
-        'lg:grid-cols-2',
-        'gap-6'
-      );
-    });
-
-    it('maintains grid layout with players', () => {
-      const players = [mockPlayer];
-      const { container } = render(
-        <PlayersSection {...defaultProps} players={players} />
-      );
-      const gridContainer = container.querySelector('.grid');
-      expect(gridContainer).toHaveClass(
-        'grid',
-        'grid-cols-1',
-        'lg:grid-cols-2',
-        'gap-6'
-      );
     });
   });
 

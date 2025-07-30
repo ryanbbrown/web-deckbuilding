@@ -25,8 +25,8 @@ describe('Game Store', () => {
       const game = getGame();
 
       expect(game).toBeDefined();
-      expect(game?.market.catalog).toBeInstanceOf(Set);
-      expect(game?.market.catalog.size).toBe(0);
+      expect(game?.market.catalog).toBeInstanceOf(Array);
+      expect(game?.market.catalog.length).toBe(0);
       expect(game?.players).toEqual([]);
       expect(game?.startingDeckComposition).toBe(null);
       expect(game?.startingHandSize).toBe(5);
@@ -92,7 +92,7 @@ describe('Game Store', () => {
 
       // Verify state exists
       expect(getGame()).toBeDefined();
-      expect(useMarketStore.getState().catalog.size).toBe(1);
+      expect(useMarketStore.getState().catalog.length).toBe(1);
       expect(usePlayerStore.getState().getAllPlayers()).toHaveLength(1);
 
       // Reset
@@ -100,7 +100,7 @@ describe('Game Store', () => {
 
       // Verify everything is cleared
       expect(getGame()).toBe(null);
-      expect(useMarketStore.getState().catalog.size).toBe(0);
+      expect(useMarketStore.getState().catalog.length).toBe(0);
       expect(usePlayerStore.getState().getAllPlayers()).toHaveLength(0);
     });
   });
@@ -115,7 +115,7 @@ describe('Game Store', () => {
 
       const game = getGame();
       expect(useMarketStore.getState().hasCardDefinition(cardDef)).toBe(true);
-      expect(game?.market.catalog.has(cardDef)).toBe(true);
+      expect(game?.market.catalog.includes(cardDef)).toBe(true);
     });
 
     it('should not add card when no game exists', () => {

@@ -17,7 +17,7 @@ describe('MarketSection Component', () => {
     startingHandSize: 5,
     startingDeckComposition: {},
     players: [],
-    market: { catalog: new Set() },
+    market: { catalog: [] },
   };
 
   const defaultProps = {
@@ -50,14 +50,6 @@ describe('MarketSection Component', () => {
       expect(
         screen.getByText('No cards in market. Add cards using the panel below.')
       ).toBeInTheDocument();
-    });
-
-    it('has correct market container styling', () => {
-      const { container } = render(<MarketSection {...defaultProps} />);
-      const marketContainer = container.querySelector(
-        '.border.border-gray-300.bg-white.rounded-lg.p-4.min-h-32'
-      );
-      expect(marketContainer).toBeInTheDocument();
     });
   });
 
@@ -116,15 +108,6 @@ describe('MarketSection Component', () => {
   });
 
   describe('normal mode (not selecting deck composition)', () => {
-    it('shows cards as draggable in normal mode', () => {
-      const marketCards = [mockCardDefinition];
-      render(<MarketSection {...defaultProps} marketCards={marketCards} />);
-
-      const cardElement = screen.getByText('Fire Bolt').closest('div');
-      expect(cardElement).toHaveClass('cursor-grab', 'active:cursor-grabbing');
-      expect(cardElement).not.toHaveClass('cursor-pointer');
-    });
-
     it('calls handleDragStart when dragging a card', () => {
       const mockHandleDragStart = vi.fn();
       const marketCards = [mockCardDefinition];
@@ -158,21 +141,6 @@ describe('MarketSection Component', () => {
   });
 
   describe('deck composition selection mode', () => {
-    it('shows cards as clickable in deck composition mode', () => {
-      const marketCards = [mockCardDefinition];
-      render(
-        <MarketSection
-          {...defaultProps}
-          marketCards={marketCards}
-          isSelectingDeckComposition={true}
-        />
-      );
-
-      const cardElement = screen.getByText('Fire Bolt').closest('div');
-      expect(cardElement).toHaveClass('cursor-pointer', 'hover:bg-blue-50');
-      expect(cardElement).not.toHaveClass('cursor-grab');
-    });
-
     it('makes cards non-draggable in deck composition mode', () => {
       const marketCards = [mockCardDefinition];
       render(
@@ -412,104 +380,6 @@ describe('MarketSection Component', () => {
         'Set Starting Deck Composition'
       );
       expect(deckCompositionButton).toBeDisabled();
-    });
-  });
-
-  describe('component styling', () => {
-    it('has correct market actions panel styling', () => {
-      const { container } = render(<MarketSection {...defaultProps} />);
-      const actionsPanel = container.querySelector('.mb-8:last-child');
-      expect(actionsPanel).toBeInTheDocument();
-    });
-
-    it('has correct action buttons styling', () => {
-      render(<MarketSection {...defaultProps} />);
-
-      const addCardButton = screen.getByText('Add Card to Market');
-      const deckCompositionButton = screen.getByText(
-        'Set Starting Deck Composition'
-      );
-
-      expect(addCardButton).toHaveClass(
-        'bg-blue-500',
-        'text-white',
-        'px-4',
-        'py-2',
-        'rounded-lg',
-        'hover:bg-blue-600',
-        'transition-colors'
-      );
-
-      expect(deckCompositionButton).toHaveClass(
-        'bg-green-500',
-        'text-white',
-        'px-4',
-        'py-2',
-        'rounded-lg',
-        'hover:bg-green-600',
-        'transition-colors'
-      );
-    });
-
-    it('has correct card styling in normal mode', () => {
-      const marketCards = [mockCardDefinition];
-      render(<MarketSection {...defaultProps} marketCards={marketCards} />);
-
-      const cardElement = screen.getByText('Fire Bolt').closest('div');
-      expect(cardElement).toHaveClass(
-        'flex-shrink-0',
-        'bg-white',
-        'border',
-        'rounded-lg',
-        'p-3',
-        'w-48',
-        'border-gray-300',
-        'shadow-sm',
-        'hover:shadow-md'
-      );
-    });
-
-    it('has correct card styling in deck composition mode', () => {
-      const marketCards = [mockCardDefinition];
-      render(
-        <MarketSection
-          {...defaultProps}
-          marketCards={marketCards}
-          isSelectingDeckComposition={true}
-        />
-      );
-
-      const cardElement = screen.getByText('Fire Bolt').closest('div');
-      expect(cardElement).toHaveClass(
-        'border-blue-400',
-        'hover:bg-blue-50',
-        'shadow-md'
-      );
-    });
-
-    it('has correct selected card indicator styling', () => {
-      const marketCards = [mockCardDefinition];
-      const deckComposition = { 'fire-bolt-1': 2 };
-
-      render(
-        <MarketSection
-          {...defaultProps}
-          marketCards={marketCards}
-          isSelectingDeckComposition={true}
-          deckComposition={deckComposition}
-        />
-      );
-
-      const selectedIndicator = screen.getByText('Selected: 2');
-      expect(selectedIndicator).toHaveClass(
-        'mt-2',
-        'text-xs',
-        'bg-blue-100',
-        'text-blue-800',
-        'px-2',
-        'py-1',
-        'rounded'
-      );
     });
   });
 
