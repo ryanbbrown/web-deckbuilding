@@ -66,6 +66,7 @@ describe('PlayerCard Component', () => {
     onCardClick: vi.fn(),
     onDrawCard: vi.fn(),
     onDrawHand: vi.fn(),
+    onDiscardAll: vi.fn(),
     onDragOver: vi.fn(),
     onDrop: vi.fn(),
   };
@@ -177,6 +178,11 @@ describe('PlayerCard Component', () => {
       expect(screen.getByText('Draw Hand')).toBeInTheDocument();
     });
 
+    it('renders Discard All button', () => {
+      render(<PlayerCard {...defaultProps} />);
+      expect(screen.getByText('Discard All')).toBeInTheDocument();
+    });
+
     it('renders Show Deck Comp button', () => {
       render(<PlayerCard {...defaultProps} />);
       expect(screen.getByText('Show Deck Comp')).toBeInTheDocument();
@@ -206,6 +212,19 @@ describe('PlayerCard Component', () => {
 
       expect(mockOnDrawHand).toHaveBeenCalledWith('player-1');
       expect(mockOnDrawHand).toHaveBeenCalledTimes(1);
+    });
+
+    it('calls onDiscardAll with correct playerId when Discard All is clicked', async () => {
+      const user = userEvent.setup();
+      const mockOnDiscardAll = vi.fn();
+
+      render(<PlayerCard {...defaultProps} onDiscardAll={mockOnDiscardAll} />);
+
+      const discardAllButton = screen.getByText('Discard All');
+      await user.click(discardAllButton);
+
+      expect(mockOnDiscardAll).toHaveBeenCalledWith('player-1');
+      expect(mockOnDiscardAll).toHaveBeenCalledTimes(1);
     });
 
     it('toggles deck composition visibility when Show Deck Comp button is clicked', async () => {
@@ -320,6 +339,9 @@ describe('PlayerCard Component', () => {
       ).toBeInTheDocument();
       expect(
         screen.getByRole('button', { name: 'Draw Hand' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Discard All' })
       ).toBeInTheDocument();
       expect(
         screen.getByRole('button', { name: 'Show Deck Comp' })

@@ -19,6 +19,7 @@ interface PlayersSectionProps {
   ) => void;
   onDrawCard: (playerId: string) => void;
   onDrawHand: (playerId: string) => void;
+  onDiscardAll: (playerId: string) => void;
   onDragOver: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent, playerId: string, zone: Zone) => void;
   onAddPlayer: () => void;
@@ -35,6 +36,7 @@ export function PlayersSection({
   onCardClick,
   onDrawCard,
   onDrawHand,
+  onDiscardAll,
   onDragOver,
   onDrop,
   onAddPlayer,
@@ -64,6 +66,7 @@ export function PlayersSection({
                 onCardClick={onCardClick}
                 onDrawCard={onDrawCard}
                 onDrawHand={onDrawHand}
+                onDiscardAll={onDiscardAll}
                 onDragOver={onDragOver}
                 onDrop={onDrop}
               />

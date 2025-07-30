@@ -67,6 +67,7 @@ describe('PlayersSection Component', () => {
     onCardClick: vi.fn(),
     onDrawCard: vi.fn(),
     onDrawHand: vi.fn(),
+    onDiscardAll: vi.fn(),
     onDragOver: vi.fn(),
     onDrop: vi.fn(),
     onAddPlayer: vi.fn(),

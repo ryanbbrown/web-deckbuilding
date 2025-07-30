@@ -16,6 +16,7 @@ export interface CardActionHandlers {
   ) => void;
   onDrawCard: (playerId: string) => void;
   onDrawHand: (playerId: string) => void;
+  onDiscardAll: (playerId: string) => void;
 }
 
 export const ZONE_CONFIGS: Record<Zone, Omit<CardZoneConfig, 'zone'>> = {
