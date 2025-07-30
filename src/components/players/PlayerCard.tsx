@@ -28,6 +28,7 @@ export function PlayerCard({
   onDrop,
 }: PlayerCardProps) {
   const [showDeckComposition, setShowDeckComposition] = useState(false);
+  const [showAllDiscardCards, setShowAllDiscardCards] = useState(false);
   return (
     <div
       className="border border-gray-300 bg-white rounded-lg p-6"
@@ -55,6 +56,8 @@ export function PlayerCard({
           onCardClick={(card, zone, event) =>
             onCardClick(card, player.playerId, zone, event)
           }
+          showAllCards={showAllDiscardCards}
+          onToggleView={() => setShowAllDiscardCards(!showAllDiscardCards)}
         />
 
         {/* Play Area */}
