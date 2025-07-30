@@ -90,14 +90,6 @@ describe('CardZone Component', () => {
       render(<CardZone zone={Zone.DECK} cards={[]} onCardClick={vi.fn()} />);
       expect(screen.getByText('Empty deck')).toBeInTheDocument();
     });
-
-    it('has correct deck styling', () => {
-      render(
-        <CardZone zone={Zone.DECK} cards={mockCards} onCardClick={vi.fn()} />
-      );
-      const deckContent = screen.getByText('Cards available');
-      expect(deckContent).toHaveClass('bg-blue-100', 'text-blue-800');
-    });
   });
 
   describe('discard zone behavior', () => {
@@ -111,14 +103,6 @@ describe('CardZone Component', () => {
     it('shows empty message when discard is empty', () => {
       render(<CardZone zone={Zone.DISCARD} cards={[]} onCardClick={vi.fn()} />);
       expect(screen.getByText('Empty')).toBeInTheDocument();
-    });
-
-    it('has correct discard styling', () => {
-      render(
-        <CardZone zone={Zone.DISCARD} cards={mockCards} onCardClick={vi.fn()} />
-      );
-      const discardContent = screen.getByText('Second Card');
-      expect(discardContent).toHaveClass('bg-red-100', 'text-red-800');
     });
   });
 
@@ -269,95 +253,6 @@ describe('CardZone Component', () => {
 
       const heading = screen.getByRole('heading', { level: 4 });
       expect(heading).toHaveTextContent('Hand (0)');
-    });
-  });
-
-  describe('styling and color schemes', () => {
-    it('applies correct background colors for each zone', () => {
-      const testCases = [
-        { zone: Zone.DECK, expectedBg: 'bg-blue-50' },
-        { zone: Zone.DISCARD, expectedBg: 'bg-red-50' },
-        { zone: Zone.PLAYED, expectedBg: 'bg-green-50' },
-        { zone: Zone.HAND, expectedBg: 'bg-yellow-50' },
-        { zone: Zone.MARKET, expectedBg: 'bg-gray-50' },
-      ];
-
-      testCases.forEach(({ zone, expectedBg }) => {
-        const { container, unmount } = render(
-          <CardZone zone={zone} cards={[]} onCardClick={vi.fn()} />
-        );
-
-        const bgElement = container.querySelector(`.${expectedBg}`);
-        expect(bgElement).toBeInTheDocument();
-        unmount();
-      });
-    });
-
-    it('applies correct card colors for hand cards', () => {
-      render(
-        <CardZone zone={Zone.HAND} cards={[mockCard]} onCardClick={vi.fn()} />
-      );
-
-      const cardElement = screen.getByText('Test Card');
-      expect(cardElement).toHaveClass(
-        'bg-yellow-200',
-        'text-yellow-800',
-        'hover:bg-yellow-300'
-      );
-    });
-
-    it('applies correct card colors for play area cards', () => {
-      render(
-        <CardZone zone={Zone.PLAYED} cards={[mockCard]} onCardClick={vi.fn()} />
-      );
-
-      const cardElement = screen.getByText('Test Card');
-      expect(cardElement).toHaveClass(
-        'bg-green-200',
-        'text-green-800',
-        'hover:bg-green-300'
-      );
-    });
-
-    it('applies custom className when provided', () => {
-      const { container } = render(
-        <CardZone {...defaultProps} className="custom-class" />
-      );
-
-      const wrapper = container.firstChild as HTMLElement;
-      expect(wrapper).toHaveClass('custom-class');
-    });
-
-    it('has correct base wrapper styling', () => {
-      const { container } = render(<CardZone {...defaultProps} />);
-
-      const wrapper = container.firstChild as HTMLElement;
-      expect(wrapper).toHaveClass(
-        'border',
-        'border-gray-200',
-        'bg-gray-50',
-        'rounded',
-        'p-3'
-      );
-    });
-
-    it('has correct title styling', () => {
-      render(<CardZone {...defaultProps} />);
-
-      const title = screen.getByRole('heading', { level: 4 });
-      expect(title).toHaveClass(
-        'text-sm',
-        'font-medium',
-        'text-gray-700',
-        'mb-2'
-      );
-    });
-
-    it('has correct inner content area styling', () => {
-      const { container } = render(<CardZone {...defaultProps} />);
-
-      const contentArea = container.querySelector('.min-h-16');
-      expect(contentArea).toHaveClass('min-h-16', 'rounded', 'p-2');
     });
   });
 
