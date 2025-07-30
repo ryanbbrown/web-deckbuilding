@@ -3,8 +3,10 @@ import { logger } from './logger';
 import { Game } from '../features/game/types';
 import { Player } from '../features/player/types';
 import { CardDefinition } from '../features/cards/types';
-import { addPlayer } from '../features/game/services/game-service';
-import { createDefaultGame } from '../lib/game-utils';
+import {
+  addPlayer,
+  createDefaultGame,
+} from '../features/game/services/game-service';
 import useMarketStore from './market-store';
 import usePlayerStore from './player-store';
 

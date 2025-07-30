@@ -11,8 +11,9 @@ import {
   discardAllInPlay,
   discardAllInHand,
   trashCard,
+  moveCardBetweenZones,
+  registerCardToPlayer,
 } from '../services';
-import usePlayerStore from '../../../store/player-store';
 
 describe('Player Service', () => {
   describe('createPlayer', () => {
@@ -44,21 +45,13 @@ describe('Player Service', () => {
         createCardDefinition(`Card ${i}`, `Text ${i}`)
       );
 
-      usePlayerStore.getState().reset();
-      usePlayerStore.getState().addPlayer(player);
-
       for (const cardDef of cardDefs) {
         const cardInstance = createCardInstance(cardDef);
-        usePlayerStore
-          .getState()
-          .registerCard(player.playerId, cardInstance, Zone.DECK);
+        player = registerCardToPlayer(player, cardInstance, Zone.DECK);
       }
 
-      const currentPlayer = usePlayerStore
-        .getState()
-        .getPlayer(player.playerId)!;
-      const originalOrder = currentPlayer.deck.map((c) => c.definition.name);
-      const shuffledPlayer = shuffleDeck(currentPlayer);
+      const originalOrder = player.deck.map((c) => c.definition.name);
+      const shuffledPlayer = shuffleDeck(player);
       const shuffledOrder = shuffledPlayer.deck.map((c) => c.definition.name);
 
       expect(shuffledPlayer.deck).toHaveLength(10);
@@ -66,42 +59,26 @@ describe('Player Service', () => {
     });
 
     it('should not mutate the original player', () => {
-      const player = createPlayer('Test Player');
+      let player = createPlayer('Test Player');
       const cardDef = createCardDefinition('Test Card', 'Test text');
       const cardInstance = createCardInstance(cardDef);
 
-      usePlayerStore.getState().reset();
-      usePlayerStore.getState().addPlayer(player);
-      usePlayerStore
-        .getState()
-        .registerCard(player.playerId, cardInstance, Zone.DECK);
+      player = registerCardToPlayer(player, cardInstance, Zone.DECK);
+      const shuffledPlayer = shuffleDeck(player);
 
-      const playerWithCard = usePlayerStore
-        .getState()
-        .getPlayer(player.playerId)!;
-      const shuffledPlayer = shuffleDeck(playerWithCard);
-
-      expect(shuffledPlayer).not.toBe(playerWithCard);
-      expect(shuffledPlayer.deck).not.toBe(playerWithCard.deck);
+      expect(shuffledPlayer).not.toBe(player);
+      expect(shuffledPlayer.deck).not.toBe(player.deck);
     });
   });
 
   describe('drawCard', () => {
     it('should draw a card from deck to hand', () => {
-      const player = createPlayer('Test Player');
+      let player = createPlayer('Test Player');
       const cardDef = createCardDefinition('Test Card', 'Test text');
       const cardInstance = createCardInstance(cardDef);
 
-      usePlayerStore.getState().reset();
-      usePlayerStore.getState().addPlayer(player);
-      usePlayerStore
-        .getState()
-        .registerCard(player.playerId, cardInstance, Zone.DECK);
-
-      const currentPlayer = usePlayerStore
-        .getState()
-        .getPlayer(player.playerId)!;
-      const result = drawCard(currentPlayer);
+      player = registerCardToPlayer(player, cardInstance, Zone.DECK);
+      const result = drawCard(player);
 
       expect(result.drawnCard).not.toBeNull();
       expect(result.drawnCard?.zone).toBe(Zone.HAND);
@@ -119,25 +96,16 @@ describe('Player Service', () => {
     });
 
     it('should shuffle discard into deck when deck is empty', () => {
-      const player = createPlayer('Test Player');
+      let player = createPlayer('Test Player');
       const cardDef1 = createCardDefinition('Card 1', 'Text 1');
       const cardDef2 = createCardDefinition('Card 2', 'Text 2');
       const cardInstance1 = createCardInstance(cardDef1);
       const cardInstance2 = createCardInstance(cardDef2);
 
-      usePlayerStore.getState().reset();
-      usePlayerStore.getState().addPlayer(player);
-      usePlayerStore
-        .getState()
-        .registerCard(player.playerId, cardInstance1, Zone.DISCARD);
-      usePlayerStore
-        .getState()
-        .registerCard(player.playerId, cardInstance2, Zone.DISCARD);
+      player = registerCardToPlayer(player, cardInstance1, Zone.DISCARD);
+      player = registerCardToPlayer(player, cardInstance2, Zone.DISCARD);
 
-      const currentPlayer = usePlayerStore
-        .getState()
-        .getPlayer(player.playerId)!;
-      const result = drawCard(currentPlayer);
+      const result = drawCard(player);
 
       expect(result.drawnCard).not.toBeNull();
       expect(result.player.deck).toHaveLength(1);
@@ -148,40 +116,28 @@ describe('Player Service', () => {
 
   describe('drawHand', () => {
     it('should discard current hand and played cards, then draw new hand', () => {
-      const player = createPlayer('Test Player');
+      let player = createPlayer('Test Player');
 
       const cardDefs = Array.from({ length: 7 }, (_, i) =>
         createCardDefinition(`Card ${i}`, `Text ${i}`)
       );
 
-      usePlayerStore.getState().reset();
-      usePlayerStore.getState().addPlayer(player);
-
       for (let i = 0; i < 3; i++) {
         const cardInstance = createCardInstance(cardDefs[i]);
-        usePlayerStore
-          .getState()
-          .registerCard(player.playerId, cardInstance, Zone.HAND);
+        player = registerCardToPlayer(player, cardInstance, Zone.HAND);
       }
 
       for (let i = 3; i < 5; i++) {
         const cardInstance = createCardInstance(cardDefs[i]);
-        usePlayerStore
-          .getState()
-          .registerCard(player.playerId, cardInstance, Zone.PLAYED);
+        player = registerCardToPlayer(player, cardInstance, Zone.PLAYED);
       }
 
       for (let i = 5; i < 7; i++) {
         const cardInstance = createCardInstance(cardDefs[i]);
-        usePlayerStore
-          .getState()
-          .registerCard(player.playerId, cardInstance, Zone.DECK);
+        player = registerCardToPlayer(player, cardInstance, Zone.DECK);
       }
 
-      const currentPlayer = usePlayerStore
-        .getState()
-        .getPlayer(player.playerId)!;
-      const result = drawHand(currentPlayer, 5);
+      const result = drawHand(player, 5);
 
       expect(result.player.hand).toHaveLength(5);
       expect(result.player.played).toHaveLength(0);
@@ -193,20 +149,12 @@ describe('Player Service', () => {
 
   describe('playCard', () => {
     it('should move a card from hand to played area', () => {
-      const player = createPlayer('Test Player');
+      let player = createPlayer('Test Player');
       const cardDef = createCardDefinition('Test Card', 'Test text');
       const cardInstance = createCardInstance(cardDef);
 
-      usePlayerStore.getState().reset();
-      usePlayerStore.getState().addPlayer(player);
-      usePlayerStore
-        .getState()
-        .registerCard(player.playerId, cardInstance, Zone.HAND);
-
-      const currentPlayer = usePlayerStore
-        .getState()
-        .getPlayer(player.playerId)!;
-      const result = playCard(currentPlayer, currentPlayer.hand[0]);
+      player = registerCardToPlayer(player, cardInstance, Zone.HAND);
+      const result = playCard(player, player.hand[0]);
 
       expect(result.success).toBe(true);
       expect(result.player.hand).toHaveLength(0);
@@ -215,42 +163,26 @@ describe('Player Service', () => {
     });
 
     it('should return false if card not in hand', () => {
-      const player = createPlayer('Test Player');
+      let player = createPlayer('Test Player');
       const cardDef = createCardDefinition('Test Card', 'Test text');
       const cardInstance = createCardInstance(cardDef);
 
-      usePlayerStore.getState().reset();
-      usePlayerStore.getState().addPlayer(player);
-      usePlayerStore
-        .getState()
-        .registerCard(player.playerId, cardInstance, Zone.DECK);
-
-      const currentPlayer = usePlayerStore
-        .getState()
-        .getPlayer(player.playerId)!;
-      const result = playCard(currentPlayer, currentPlayer.deck[0]);
+      player = registerCardToPlayer(player, cardInstance, Zone.DECK);
+      const result = playCard(player, player.deck[0]);
 
       expect(result.success).toBe(false);
-      expect(result.player).toBe(currentPlayer);
+      expect(result.player).toBe(player);
     });
   });
 
   describe('discardCard', () => {
     it('should discard a card from hand', () => {
-      const player = createPlayer('Test Player');
+      let player = createPlayer('Test Player');
       const cardDef = createCardDefinition('Test Card', 'Test text');
       const cardInstance = createCardInstance(cardDef);
 
-      usePlayerStore.getState().reset();
-      usePlayerStore.getState().addPlayer(player);
-      usePlayerStore
-        .getState()
-        .registerCard(player.playerId, cardInstance, Zone.HAND);
-
-      const currentPlayer = usePlayerStore
-        .getState()
-        .getPlayer(player.playerId)!;
-      const result = discardCard(currentPlayer, currentPlayer.hand[0]);
+      player = registerCardToPlayer(player, cardInstance, Zone.HAND);
+      const result = discardCard(player, player.hand[0]);
 
       expect(result.success).toBe(true);
       expect(result.player.hand).toHaveLength(0);
@@ -258,24 +190,12 @@ describe('Player Service', () => {
     });
 
     it('should discard a card from played area', () => {
-      const player = createPlayer('Test Player');
+      let player = createPlayer('Test Player');
       const cardDef = createCardDefinition('Test Card', 'Test text');
       const cardInstance = createCardInstance(cardDef);
 
-      usePlayerStore.getState().reset();
-      usePlayerStore.getState().addPlayer(player);
-      usePlayerStore
-        .getState()
-        .registerCard(player.playerId, cardInstance, Zone.PLAYED);
-
-      const currentPlayer = usePlayerStore
-        .getState()
-        .getPlayer(player.playerId)!;
-      const result = discardCard(
-        currentPlayer,
-        currentPlayer.played[0],
-        Zone.PLAYED
-      );
+      player = registerCardToPlayer(player, cardInstance, Zone.PLAYED);
+      const result = discardCard(player, player.played[0], Zone.PLAYED);
 
       expect(result.success).toBe(true);
       expect(result.player.played).toHaveLength(0);
@@ -283,52 +203,32 @@ describe('Player Service', () => {
     });
 
     it('should return false for invalid zones', () => {
-      const player = createPlayer('Test Player');
+      let player = createPlayer('Test Player');
       const cardDef = createCardDefinition('Test Card', 'Test text');
       const cardInstance = createCardInstance(cardDef);
 
-      usePlayerStore.getState().reset();
-      usePlayerStore.getState().addPlayer(player);
-      usePlayerStore
-        .getState()
-        .registerCard(player.playerId, cardInstance, Zone.DECK);
-
-      const currentPlayer = usePlayerStore
-        .getState()
-        .getPlayer(player.playerId)!;
-      const result = discardCard(
-        currentPlayer,
-        currentPlayer.deck[0],
-        Zone.DECK
-      );
+      player = registerCardToPlayer(player, cardInstance, Zone.DECK);
+      const result = discardCard(player, player.deck[0], Zone.DECK);
 
       expect(result.success).toBe(false);
-      expect(result.player).toBe(currentPlayer);
+      expect(result.player).toBe(player);
     });
   });
 
   describe('discardAllInPlay', () => {
     it('should discard all cards from played area', () => {
-      const player = createPlayer('Test Player');
+      let player = createPlayer('Test Player');
 
       const cardDefs = Array.from({ length: 3 }, (_, i) =>
         createCardDefinition(`Card ${i}`, `Text ${i}`)
       );
 
-      usePlayerStore.getState().reset();
-      usePlayerStore.getState().addPlayer(player);
-
       for (const cardDef of cardDefs) {
         const cardInstance = createCardInstance(cardDef);
-        usePlayerStore
-          .getState()
-          .registerCard(player.playerId, cardInstance, Zone.PLAYED);
+        player = registerCardToPlayer(player, cardInstance, Zone.PLAYED);
       }
 
-      const currentPlayer = usePlayerStore
-        .getState()
-        .getPlayer(player.playerId)!;
-      const updatedPlayer = discardAllInPlay(currentPlayer);
+      const updatedPlayer = discardAllInPlay(player);
 
       expect(updatedPlayer.played).toHaveLength(0);
       expect(updatedPlayer.discard).toHaveLength(3);
@@ -346,26 +246,18 @@ describe('Player Service', () => {
 
   describe('discardAllInHand', () => {
     it('should discard all cards from hand', () => {
-      const player = createPlayer('Test Player');
+      let player = createPlayer('Test Player');
 
       const cardDefs = Array.from({ length: 3 }, (_, i) =>
         createCardDefinition(`Card ${i}`, `Text ${i}`)
       );
 
-      usePlayerStore.getState().reset();
-      usePlayerStore.getState().addPlayer(player);
-
       for (const cardDef of cardDefs) {
         const cardInstance = createCardInstance(cardDef);
-        usePlayerStore
-          .getState()
-          .registerCard(player.playerId, cardInstance, Zone.HAND);
+        player = registerCardToPlayer(player, cardInstance, Zone.HAND);
       }
 
-      const currentPlayer = usePlayerStore
-        .getState()
-        .getPlayer(player.playerId)!;
-      const updatedPlayer = discardAllInHand(currentPlayer);
+      const updatedPlayer = discardAllInHand(player);
 
       expect(updatedPlayer.hand).toHaveLength(0);
       expect(updatedPlayer.discard).toHaveLength(3);
@@ -383,20 +275,12 @@ describe('Player Service', () => {
 
   describe('trashCard', () => {
     it('should completely remove a card from hand', () => {
-      const player = createPlayer('Test Player');
+      let player = createPlayer('Test Player');
       const cardDef = createCardDefinition('Test Card', 'Test text');
       const cardInstance = createCardInstance(cardDef);
 
-      usePlayerStore.getState().reset();
-      usePlayerStore.getState().addPlayer(player);
-      usePlayerStore
-        .getState()
-        .registerCard(player.playerId, cardInstance, Zone.HAND);
-
-      const currentPlayer = usePlayerStore
-        .getState()
-        .getPlayer(player.playerId)!;
-      const result = trashCard(currentPlayer, currentPlayer.hand[0], Zone.HAND);
+      player = registerCardToPlayer(player, cardInstance, Zone.HAND);
+      const result = trashCard(player, player.hand[0], Zone.HAND);
 
       expect(result.success).toBe(true);
       expect(result.player.hand).toHaveLength(0);
@@ -407,24 +291,12 @@ describe('Player Service', () => {
     });
 
     it('should completely remove a card from played area', () => {
-      const player = createPlayer('Test Player');
+      let player = createPlayer('Test Player');
       const cardDef = createCardDefinition('Test Card', 'Test text');
       const cardInstance = createCardInstance(cardDef);
 
-      usePlayerStore.getState().reset();
-      usePlayerStore.getState().addPlayer(player);
-      usePlayerStore
-        .getState()
-        .registerCard(player.playerId, cardInstance, Zone.PLAYED);
-
-      const currentPlayer = usePlayerStore
-        .getState()
-        .getPlayer(player.playerId)!;
-      const result = trashCard(
-        currentPlayer,
-        currentPlayer.played[0],
-        Zone.PLAYED
-      );
+      player = registerCardToPlayer(player, cardInstance, Zone.PLAYED);
+      const result = trashCard(player, player.played[0], Zone.PLAYED);
 
       expect(result.success).toBe(true);
       expect(result.player.played).toHaveLength(0);
@@ -432,46 +304,26 @@ describe('Player Service', () => {
     });
 
     it('should return false when trying to trash from deck', () => {
-      const player = createPlayer('Test Player');
+      let player = createPlayer('Test Player');
       const cardDef = createCardDefinition('Test Card', 'Test text');
       const cardInstance = createCardInstance(cardDef);
 
-      usePlayerStore.getState().reset();
-      usePlayerStore.getState().addPlayer(player);
-      usePlayerStore
-        .getState()
-        .registerCard(player.playerId, cardInstance, Zone.DECK);
-
-      const currentPlayer = usePlayerStore
-        .getState()
-        .getPlayer(player.playerId)!;
-      const result = trashCard(currentPlayer, currentPlayer.deck[0], Zone.DECK);
+      player = registerCardToPlayer(player, cardInstance, Zone.DECK);
+      const result = trashCard(player, player.deck[0], Zone.DECK);
 
       expect(result.success).toBe(false);
-      expect(result.player).toBe(currentPlayer);
+      expect(result.player).toBe(player);
       expect(result.player.deck).toHaveLength(1);
       expect(result.player.allCards).toHaveLength(1);
     });
 
     it('should completely remove a card from discard pile', () => {
-      const player = createPlayer('Test Player');
+      let player = createPlayer('Test Player');
       const cardDef = createCardDefinition('Test Card', 'Test text');
       const cardInstance = createCardInstance(cardDef);
 
-      usePlayerStore.getState().reset();
-      usePlayerStore.getState().addPlayer(player);
-      usePlayerStore
-        .getState()
-        .registerCard(player.playerId, cardInstance, Zone.DISCARD);
-
-      const currentPlayer = usePlayerStore
-        .getState()
-        .getPlayer(player.playerId)!;
-      const result = trashCard(
-        currentPlayer,
-        currentPlayer.discard[0],
-        Zone.DISCARD
-      );
+      player = registerCardToPlayer(player, cardInstance, Zone.DISCARD);
+      const result = trashCard(player, player.discard[0], Zone.DISCARD);
 
       expect(result.success).toBe(true);
       expect(result.player.discard).toHaveLength(0);
@@ -479,23 +331,15 @@ describe('Player Service', () => {
     });
 
     it('should return false if card not in specified zone', () => {
-      const player = createPlayer('Test Player');
+      let player = createPlayer('Test Player');
       const cardDef = createCardDefinition('Test Card', 'Test text');
       const cardInstance = createCardInstance(cardDef);
 
-      usePlayerStore.getState().reset();
-      usePlayerStore.getState().addPlayer(player);
-      usePlayerStore
-        .getState()
-        .registerCard(player.playerId, cardInstance, Zone.DECK);
-
-      const currentPlayer = usePlayerStore
-        .getState()
-        .getPlayer(player.playerId)!;
-      const result = trashCard(currentPlayer, currentPlayer.deck[0], Zone.HAND);
+      player = registerCardToPlayer(player, cardInstance, Zone.DECK);
+      const result = trashCard(player, player.deck[0], Zone.HAND);
 
       expect(result.success).toBe(false);
-      expect(result.player).toBe(currentPlayer);
+      expect(result.player).toBe(player);
     });
 
     it('should return false when trying to trash from market zone', () => {
@@ -510,30 +354,229 @@ describe('Player Service', () => {
     });
 
     it('should preserve other cards when trashing one card', () => {
-      const player = createPlayer('Test Player');
+      let player = createPlayer('Test Player');
       const cardDef1 = createCardDefinition('Card 1', 'Text 1');
       const cardDef2 = createCardDefinition('Card 2', 'Text 2');
       const cardInstance1 = createCardInstance(cardDef1);
       const cardInstance2 = createCardInstance(cardDef2);
 
-      usePlayerStore.getState().reset();
-      usePlayerStore.getState().addPlayer(player);
-      usePlayerStore
-        .getState()
-        .registerCard(player.playerId, cardInstance1, Zone.HAND);
-      usePlayerStore
-        .getState()
-        .registerCard(player.playerId, cardInstance2, Zone.HAND);
+      player = registerCardToPlayer(player, cardInstance1, Zone.HAND);
+      player = registerCardToPlayer(player, cardInstance2, Zone.HAND);
 
-      const currentPlayer = usePlayerStore
-        .getState()
-        .getPlayer(player.playerId)!;
-      const result = trashCard(currentPlayer, currentPlayer.hand[0], Zone.HAND);
+      const result = trashCard(player, player.hand[0], Zone.HAND);
 
       expect(result.success).toBe(true);
       expect(result.player.hand).toHaveLength(1);
       expect(result.player.allCards).toHaveLength(1);
       expect(result.player.hand[0].definition.name).toBe('Card 2');
+    });
+  });
+
+  describe('moveCardBetweenZones', () => {
+    it('should move a card from deck to hand', () => {
+      let player = createPlayer('Test Player');
+      const cardDef = createCardDefinition('Test Card', 'Test text');
+      const cardInstance = createCardInstance(cardDef);
+
+      player = registerCardToPlayer(player, cardInstance, Zone.DECK);
+      const result = moveCardBetweenZones(
+        player,
+        player.deck[0],
+        Zone.DECK,
+        Zone.HAND
+      );
+
+      expect(result.deck).toHaveLength(0);
+      expect(result.hand).toHaveLength(1);
+      expect(result.hand[0].zone).toBe(Zone.HAND);
+      expect(result.allCards).toHaveLength(1);
+      expect(result.allCards[0].zone).toBe(Zone.HAND);
+    });
+
+    it('should move a card from hand to played area', () => {
+      let player = createPlayer('Test Player');
+      const cardDef = createCardDefinition('Test Card', 'Test text');
+      const cardInstance = createCardInstance(cardDef);
+
+      player = registerCardToPlayer(player, cardInstance, Zone.HAND);
+      const result = moveCardBetweenZones(
+        player,
+        player.hand[0],
+        Zone.HAND,
+        Zone.PLAYED
+      );
+
+      expect(result.hand).toHaveLength(0);
+      expect(result.played).toHaveLength(1);
+      expect(result.played[0].zone).toBe(Zone.PLAYED);
+    });
+
+    it('should move a card from played to discard', () => {
+      let player = createPlayer('Test Player');
+      const cardDef = createCardDefinition('Test Card', 'Test text');
+      const cardInstance = createCardInstance(cardDef);
+
+      player = registerCardToPlayer(player, cardInstance, Zone.PLAYED);
+      const result = moveCardBetweenZones(
+        player,
+        player.played[0],
+        Zone.PLAYED,
+        Zone.DISCARD
+      );
+
+      expect(result.played).toHaveLength(0);
+      expect(result.discard).toHaveLength(1);
+      expect(result.discard[0].zone).toBe(Zone.DISCARD);
+    });
+
+    it('should move a card from discard to deck', () => {
+      let player = createPlayer('Test Player');
+      const cardDef = createCardDefinition('Test Card', 'Test text');
+      const cardInstance = createCardInstance(cardDef);
+
+      player = registerCardToPlayer(player, cardInstance, Zone.DISCARD);
+      const result = moveCardBetweenZones(
+        player,
+        player.discard[0],
+        Zone.DISCARD,
+        Zone.DECK
+      );
+
+      expect(result.discard).toHaveLength(0);
+      expect(result.deck).toHaveLength(1);
+      expect(result.deck[0].zone).toBe(Zone.DECK);
+    });
+
+    it('should update allCards zone when moving between zones', () => {
+      let player = createPlayer('Test Player');
+      const cardDef = createCardDefinition('Test Card', 'Test text');
+      const cardInstance = createCardInstance(cardDef);
+
+      player = registerCardToPlayer(player, cardInstance, Zone.HAND);
+      const originalCardId = player.hand[0].instanceId;
+
+      const result = moveCardBetweenZones(
+        player,
+        player.hand[0],
+        Zone.HAND,
+        Zone.PLAYED
+      );
+      const movedCard = result.allCards.find(
+        (c) => c.instanceId === originalCardId
+      );
+
+      expect(movedCard?.zone).toBe(Zone.PLAYED);
+    });
+
+    it('should not mutate the original player', () => {
+      let player = createPlayer('Test Player');
+      const cardDef = createCardDefinition('Test Card', 'Test text');
+      const cardInstance = createCardInstance(cardDef);
+
+      player = registerCardToPlayer(player, cardInstance, Zone.HAND);
+      const result = moveCardBetweenZones(
+        player,
+        player.hand[0],
+        Zone.HAND,
+        Zone.PLAYED
+      );
+
+      expect(result).not.toBe(player);
+      expect(result.hand).not.toBe(player.hand);
+      expect(result.played).not.toBe(player.played);
+    });
+  });
+
+  describe('registerCardToPlayer', () => {
+    it('should add a card to discard by default', () => {
+      const player = createPlayer('Test Player');
+      const cardDef = createCardDefinition('Test Card', 'Test text');
+      const cardInstance = createCardInstance(cardDef);
+
+      const result = registerCardToPlayer(player, cardInstance);
+
+      expect(result.discard).toHaveLength(1);
+      expect(result.allCards).toHaveLength(1);
+      expect(result.discard[0].ownerId).toBe(player.playerId);
+      expect(result.discard[0].zone).toBe(Zone.DISCARD);
+    });
+
+    it('should add a card to the specified zone', () => {
+      const player = createPlayer('Test Player');
+      const cardDef = createCardDefinition('Test Card', 'Test text');
+      const cardInstance = createCardInstance(cardDef);
+
+      const result = registerCardToPlayer(player, cardInstance, Zone.HAND);
+
+      expect(result.hand).toHaveLength(1);
+      expect(result.allCards).toHaveLength(1);
+      expect(result.hand[0].ownerId).toBe(player.playerId);
+      expect(result.hand[0].zone).toBe(Zone.HAND);
+    });
+
+    it('should add a card to the deck when specified', () => {
+      const player = createPlayer('Test Player');
+      const cardDef = createCardDefinition('Test Card', 'Test text');
+      const cardInstance = createCardInstance(cardDef);
+
+      const result = registerCardToPlayer(player, cardInstance, Zone.DECK);
+
+      expect(result.deck).toHaveLength(1);
+      expect(result.allCards).toHaveLength(1);
+      expect(result.deck[0].ownerId).toBe(player.playerId);
+      expect(result.deck[0].zone).toBe(Zone.DECK);
+    });
+
+    it('should add a card to the played area when specified', () => {
+      const player = createPlayer('Test Player');
+      const cardDef = createCardDefinition('Test Card', 'Test text');
+      const cardInstance = createCardInstance(cardDef);
+
+      const result = registerCardToPlayer(player, cardInstance, Zone.PLAYED);
+
+      expect(result.played).toHaveLength(1);
+      expect(result.allCards).toHaveLength(1);
+      expect(result.played[0].ownerId).toBe(player.playerId);
+      expect(result.played[0].zone).toBe(Zone.PLAYED);
+    });
+
+    it('should set the card owner ID', () => {
+      const player = createPlayer('Test Player');
+      const cardDef = createCardDefinition('Test Card', 'Test text');
+      const cardInstance = createCardInstance(cardDef);
+
+      const result = registerCardToPlayer(player, cardInstance, Zone.HAND);
+
+      expect(result.hand[0].ownerId).toBe(player.playerId);
+      expect(result.allCards[0].ownerId).toBe(player.playerId);
+    });
+
+    it('should not mutate the original player', () => {
+      const player = createPlayer('Test Player');
+      const cardDef = createCardDefinition('Test Card', 'Test text');
+      const cardInstance = createCardInstance(cardDef);
+
+      const result = registerCardToPlayer(player, cardInstance, Zone.HAND);
+
+      expect(result).not.toBe(player);
+      expect(result.hand).not.toBe(player.hand);
+      expect(result.allCards).not.toBe(player.allCards);
+    });
+
+    it('should handle multiple cards in the same zone', () => {
+      let player = createPlayer('Test Player');
+      const cardDef1 = createCardDefinition('Card 1', 'Text 1');
+      const cardDef2 = createCardDefinition('Card 2', 'Text 2');
+      const cardInstance1 = createCardInstance(cardDef1);
+      const cardInstance2 = createCardInstance(cardDef2);
+
+      player = registerCardToPlayer(player, cardInstance1, Zone.HAND);
+      player = registerCardToPlayer(player, cardInstance2, Zone.HAND);
+
+      expect(player.hand).toHaveLength(2);
+      expect(player.allCards).toHaveLength(2);
+      expect(player.hand[0].definition.name).toBe('Card 1');
+      expect(player.hand[1].definition.name).toBe('Card 2');
     });
   });
 });

@@ -1,0 +1,8 @@
+---
+description:
+globs:
+alwaysApply: false
+---
+When implementing a new feature, complete the following steps:
+- If new back-end functionality is required, add it to the relevant service file in `src/features/[feature_name]/services`.
+- Update the service test file to test the new functionality and modify any existing tests as needed. Run `pnpm test --run` to ensure that all tests are passing.

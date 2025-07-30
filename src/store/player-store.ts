@@ -3,10 +3,6 @@ import { logger } from './logger';
 import { CardInstance, Zone } from '../features/cards/types';
 import { Player } from '../features/player/types';
 import {
-  moveCardBetweenZones,
-  registerCardToPlayer,
-} from '../lib/player-utils';
-import {
   shuffleDeck,
   drawCard,
   drawHand,
@@ -15,6 +11,8 @@ import {
   discardAllInPlay,
   discardAllInHand,
   trashCard,
+  moveCardBetweenZones,
+  registerCardToPlayer,
 } from '../features/player/services/player-service';
 
 interface PlayerState extends Record<string, unknown> {

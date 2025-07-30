@@ -1,8 +1,44 @@
-import { CardDefinition } from '../../cards/types';
-import { shuffleDeck } from '../../player/services';
+import { CardDefinition, Zone } from '../../cards/types';
+import { createCardInstance } from '../../cards/services';
+import { shuffleDeck, registerCardToPlayer } from '../../player/services';
 import { Player } from '../../player/types';
 import { Game } from '../types';
-import { setupPlayerDeck } from '../../../lib/player-utils';
+
+export function createDefaultGame(): Game {
+  return {
+    market: { catalog: new Set() },
+    players: [],
+    startingDeckComposition: null,
+    startingHandSize: 5,
+  };
+}
+
+export function setupPlayerDeck(
+  player: Player,
+  deckComposition: Record<string, number>,
+  cardDefinitions: CardDefinition[]
+): { player: Player; success: boolean } {
+  const cardDefMap = new Map(cardDefinitions.map((def) => [def.uid, def]));
+  let updatedPlayer = { ...player };
+
+  for (const [cardDefUid, count] of Object.entries(deckComposition)) {
+    const cardDef = cardDefMap.get(cardDefUid);
+    if (!cardDef) {
+      return { player, success: false };
+    }
+
+    for (let i = 0; i < count; i++) {
+      const cardInstance = createCardInstance(cardDef);
+      updatedPlayer = registerCardToPlayer(
+        updatedPlayer,
+        cardInstance,
+        Zone.DECK
+      );
+    }
+  }
+
+  return { player: updatedPlayer, success: true };
+}
 
 export function addPlayer(
   game: Game,
@@ -13,7 +49,7 @@ export function addPlayer(
     return { game, success: false };
   }
 
-  // Set up player deck using utility
+  // Set up player deck
   const deckResult = setupPlayerDeck(
     player,
     game.startingDeckComposition,
