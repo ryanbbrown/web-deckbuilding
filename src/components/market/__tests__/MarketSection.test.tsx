@@ -457,15 +457,17 @@ describe('MarketSection Component', () => {
 
       const cardElement = screen.getByText('Fire Bolt').closest('div');
       expect(cardElement).toHaveClass(
-        'flex-shrink-0',
         'bg-white',
         'border',
         'rounded-lg',
         'p-3',
         'w-48',
+        'transition-all',
         'border-gray-300',
         'shadow-sm',
-        'hover:shadow-md'
+        'hover:shadow-md',
+        'cursor-grab',
+        'active:cursor-grabbing'
       );
     });
 

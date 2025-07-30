@@ -28,17 +28,19 @@ export function MarketSection({
       {/* Market Container */}
       <div className="mb-8">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">Market</h2>
-        <div className="border border-gray-300 bg-white rounded-lg p-4 min-h-32 flex items-center">
+        <div className="border border-gray-300 bg-white rounded-lg p-4 min-h-32">
           {marketCards.length === 0 ? (
-            <p className="text-gray-500 italic">
-              No cards in market. Add cards using the panel below.
-            </p>
+            <div className="flex items-center min-h-24">
+              <p className="text-gray-500 italic">
+                No cards in market. Add cards using the panel below.
+              </p>
+            </div>
           ) : (
-            <div className="flex gap-4 overflow-x-auto">
+            <div className="flex flex-wrap gap-4">
               {marketCards.map((card) => (
                 <div
                   key={card.uid}
-                  className={`flex-shrink-0 bg-white border rounded-lg p-3 w-48 transition-all ${
+                  className={`bg-white border rounded-lg p-3 w-48 transition-all ${
                     isSelectingDeckComposition
                       ? 'border-blue-400 cursor-pointer hover:bg-blue-50 shadow-md'
                       : 'border-gray-300 shadow-sm hover:shadow-md cursor-grab active:cursor-grabbing'
