@@ -10,7 +10,7 @@ describe('Footer Component', () => {
     render(<Footer />);
 
     // Test that the footer text is present
-    expect(screen.getByText('Deck Building Game')).toBeInTheDocument();
+    expect(screen.getByText('Deckbuilding Sandbox')).toBeInTheDocument();
   });
 
   it('has the correct semantic HTML structure', () => {

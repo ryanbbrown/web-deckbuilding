@@ -10,6 +10,7 @@ import { DeckCompositionBanner } from '@/components/DeckCompositionBanner';
 import { MarketSection } from '@/components/market/MarketSection';
 import { PlayersSection } from '@/components/players/PlayersSection';
 import { AddCardModal } from '@/components/modals/AddCardModal';
+import { BulkAddCardModal } from '@/components/modals/BulkAddCardModal';
 import { CardContextMenu } from '@/components/modals/CardContextMenu';
 import './App.css';
 
@@ -18,6 +19,9 @@ function App() {
   const game = useGameStore((state) => state.game);
 
   const addCardToMarket = useGameStore((state) => state.addCardToMarket);
+  const addMultipleCardsToMarket = useMarketStore(
+    (state) => state.addMultipleCardDefinitions
+  );
   const setStartingDeckComposition = useGameStore(
     (state) => state.setStartingDeckComposition
   );
@@ -36,6 +40,7 @@ function App() {
 
   // Modal and form state
   const [showAddCardModal, setShowAddCardModal] = useState(false);
+  const [showBulkAddCardModal, setShowBulkAddCardModal] = useState(false);
   const [isSelectingDeckComposition, setIsSelectingDeckComposition] =
     useState(false);
   const [showInlineAddPlayer, setShowInlineAddPlayer] = useState(false);
@@ -94,6 +99,32 @@ function App() {
       }
     } else {
       showError('Please fill in all card fields with valid values.');
+    }
+  };
+
+  const handleBulkAddCards = (result: {
+    success: boolean;
+    cards: CardDefinition[];
+    errors: string[];
+    totalLines: number;
+    successfulLines: number;
+  }) => {
+    try {
+      if (result.success && result.cards.length > 0) {
+        // All-or-nothing: only add cards if there were no errors
+        addMultipleCardsToMarket(result.cards);
+        console.log(
+          `Successfully added ${result.cards.length} cards to market`
+        );
+      } else if (!result.success) {
+        // Show detailed error information - no cards were added
+        const errorSummary = `Failed to add cards. Please fix the following errors: ${result.errors.join('; ')}`;
+        showError(errorSummary);
+        console.error('Bulk add failed with errors:', result.errors);
+      }
+    } catch (error) {
+      console.error('Failed to add cards to market:', error);
+      showError('Failed to add cards to market. Please try again.');
     }
   };
 
@@ -393,7 +424,7 @@ function App() {
   };
 
   return (
-    <div className="h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-gray-50 p-6">
       <div className="max-w-full mx-auto">
         {/* Error Message Banner */}
         {errorMessage && (
@@ -425,6 +456,7 @@ function App() {
           updateDeckQuantity={updateDeckQuantity}
           handleDragStart={handleDragStart}
           onShowAddCardModal={() => setShowAddCardModal(true)}
+          onShowBulkAddCardModal={() => setShowBulkAddCardModal(true)}
           onStartDeckComposition={handleStartDeckComposition}
           game={game}
         />
@@ -458,6 +490,14 @@ function App() {
           setCardForm={setCardForm}
           onAddCard={handleAddCard}
           onClose={() => setShowAddCardModal(false)}
+        />
+      )}
+
+      {/* Bulk Add Card Modal */}
+      {showBulkAddCardModal && (
+        <BulkAddCardModal
+          onAddCards={handleBulkAddCards}
+          onClose={() => setShowBulkAddCardModal(false)}
         />
       )}
 
