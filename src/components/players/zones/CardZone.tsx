@@ -11,6 +11,8 @@ interface CardZoneProps {
     event: React.MouseEvent
   ) => void;
   className?: string;
+  showAllCards?: boolean;
+  onToggleView?: () => void;
 }
 
 export function CardZone({
@@ -18,6 +20,8 @@ export function CardZone({
   cards,
   onCardClick,
   className,
+  showAllCards = false,
+  onToggleView,
 }: CardZoneProps) {
   const config = ZONE_CONFIGS[zone];
 
@@ -25,21 +29,62 @@ export function CardZone({
     if (zone === Zone.DECK) {
       // Deck shows just count and status
       return (
-        <div className="bg-blue-100 rounded p-2 text-center text-sm text-blue-800">
+        <div className="bg-blue-200 rounded p-2 text-center text-sm text-blue-800">
           {cards.length > 0 ? 'Cards available' : config.emptyMessage}
         </div>
       );
     }
 
     if (zone === Zone.DISCARD) {
-      // Discard shows most recent card
-      return (
-        <div className="bg-red-100 rounded p-2 text-center text-sm text-red-800">
-          {cards.length > 0
-            ? cards[cards.length - 1].definition.name
-            : config.emptyMessage}
-        </div>
-      );
+      if (showAllCards && cards.length > 0) {
+        // Show all cards like hand/play area
+        const bgColor = 'bg-red-200 text-red-800 hover:bg-red-300';
+        return (
+          <div className="flex gap-2 flex-wrap">
+            {cards.map((card) => (
+              <span
+                key={card.instanceId}
+                className={`${bgColor} px-2 py-1 rounded text-xs cursor-pointer transition-colors`}
+                data-card-clickable="true"
+                onClick={(e) => onCardClick(card, zone, e)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const syntheticEvent = {
+                      ...e,
+                      clientX: 0,
+                      clientY: 0,
+                      button: 0,
+                      buttons: 1,
+                      movementX: 0,
+                      movementY: 0,
+                      pageX: 0,
+                      pageY: 0,
+                      relatedTarget: null,
+                      screenX: 0,
+                      screenY: 0,
+                    } as unknown as React.MouseEvent;
+                    onCardClick(card, zone, syntheticEvent);
+                  }
+                }}
+                role="button"
+                tabIndex={0}
+              >
+                {card.definition.name}
+              </span>
+            ))}
+          </div>
+        );
+      } else {
+        // Show most recent card only
+        return (
+          <div className="bg-red-200 rounded p-2 text-center text-sm text-red-800">
+            {cards.length > 0
+              ? cards[cards.length - 1].definition.name
+              : config.emptyMessage}
+          </div>
+        );
+      }
     }
 
     // Hand and Play Area show individual clickable cards
@@ -112,9 +157,19 @@ export function CardZone({
     <div
       className={`border border-gray-200 bg-gray-50 rounded p-3 ${config.gridSpan || ''} ${className || ''}`}
     >
-      <h4 className="text-sm font-medium text-gray-700 mb-2">
-        {config.title} ({cards.length})
-      </h4>
+      <div className="flex justify-between items-center mb-2">
+        <h4 className="text-sm font-medium text-gray-700">
+          {config.title} ({cards.length})
+        </h4>
+        {zone === Zone.DISCARD && onToggleView && cards.length > 0 && (
+          <button
+            onClick={onToggleView}
+            className="text-xs text-red-600 hover:text-red-800 hover:underline transition-colors"
+          >
+            {showAllCards ? 'Show Top Card' : 'Show All Cards'}
+          </button>
+        )}
+      </div>
       <div className={`min-h-16 ${bgColorClass} rounded p-2`}>
         {getZoneContent()}
       </div>
