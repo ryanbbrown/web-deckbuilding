@@ -11,7 +11,7 @@ describe('GameHeader Component', () => {
       'card-3': 1,
     },
     players: [],
-    market: { catalog: new Set() },
+    market: { catalog: [] },
   };
 
   it('renders without crashing with null game', () => {

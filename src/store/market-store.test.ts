@@ -11,8 +11,8 @@ describe('Market Store', () => {
     it('should start with an empty catalog', () => {
       const { catalog } = useMarketStore.getState();
 
-      expect(catalog).toBeInstanceOf(Set);
-      expect(catalog.size).toBe(0);
+      expect(catalog).toBeInstanceOf(Array);
+      expect(catalog.length).toBe(0);
     });
   });
 
@@ -25,17 +25,17 @@ describe('Market Store', () => {
       addCardDefinition(cardDef);
 
       expect(hasCardDefinition(cardDef)).toBe(true);
-      expect(useMarketStore.getState().catalog.size).toBe(1);
+      expect(useMarketStore.getState().catalog.length).toBe(1);
     });
 
-    it('should not add duplicate card definitions', () => {
+    it('should allow duplicate card definitions (since UIDs make them unique)', () => {
       const cardDef = createCardDefinition('Test Card', 'Test text');
       const { addCardDefinition } = useMarketStore.getState();
 
       addCardDefinition(cardDef);
       addCardDefinition(cardDef);
 
-      expect(useMarketStore.getState().catalog.size).toBe(1);
+      expect(useMarketStore.getState().catalog.length).toBe(2);
     });
   });
 
@@ -50,7 +50,7 @@ describe('Market Store', () => {
 
       removeCardDefinition(cardDef);
       expect(useMarketStore.getState().hasCardDefinition(cardDef)).toBe(false);
-      expect(useMarketStore.getState().catalog.size).toBe(0);
+      expect(useMarketStore.getState().catalog.length).toBe(0);
     });
 
     it('should handle removing non-existent card gracefully', () => {
@@ -59,7 +59,7 @@ describe('Market Store', () => {
 
       removeCardDefinition(cardDef);
 
-      expect(useMarketStore.getState().catalog.size).toBe(0);
+      expect(useMarketStore.getState().catalog.length).toBe(0);
     });
   });
 
@@ -112,10 +112,10 @@ describe('Market Store', () => {
       const { addCardDefinition, reset } = useMarketStore.getState();
 
       addCardDefinition(cardDef);
-      expect(useMarketStore.getState().catalog.size).toBe(1);
+      expect(useMarketStore.getState().catalog.length).toBe(1);
 
       reset();
-      expect(useMarketStore.getState().catalog.size).toBe(0);
+      expect(useMarketStore.getState().catalog.length).toBe(0);
     });
   });
 });

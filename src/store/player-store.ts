@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { logger } from './logger';
 import { CardInstance, Zone } from '../features/cards/types';
 import { Player } from '../features/player/types';
@@ -64,152 +65,158 @@ interface PlayerState extends Record<string, unknown> {
 }
 
 const usePlayerStore = create<PlayerState>()(
-  logger<PlayerState>(
-    (set, get) => ({
-      players: {},
+  persist(
+    logger<PlayerState>(
+      (set, get) => ({
+        players: {},
 
-      // CRUD actions
-      addPlayer: (player) => {
-        set((state) => ({
-          players: { ...state.players, [player.playerId]: player },
-        }));
-      },
+        // CRUD actions
+        addPlayer: (player) => {
+          set((state) => ({
+            players: { ...state.players, [player.playerId]: player },
+          }));
+        },
 
-      updatePlayer: (playerId, updates) => {
-        set((state) => {
-          const player = state.players[playerId];
-          if (!player) return state;
+        updatePlayer: (playerId, updates) => {
+          set((state) => {
+            const player = state.players[playerId];
+            if (!player) return state;
 
-          return {
-            players: {
-              ...state.players,
-              [playerId]: { ...player, ...updates },
-            },
-          };
-        });
-      },
+            return {
+              players: {
+                ...state.players,
+                [playerId]: { ...player, ...updates },
+              },
+            };
+          });
+        },
 
-      removePlayer: (playerId) => {
-        set((state) => {
-          const newPlayers = { ...state.players };
-          delete newPlayers[playerId];
-          return { players: newPlayers };
-        });
-      },
+        removePlayer: (playerId) => {
+          set((state) => {
+            const newPlayers = { ...state.players };
+            delete newPlayers[playerId];
+            return { players: newPlayers };
+          });
+        },
 
-      reset: () => {
-        set({ players: {} });
-      },
+        reset: () => {
+          set({ players: {} });
+        },
 
-      // Selectors
-      getPlayer: (playerId) => {
-        return get().players[playerId];
-      },
+        // Selectors
+        getPlayer: (playerId) => {
+          return get().players[playerId];
+        },
 
-      getAllPlayers: () => {
-        return Object.values(get().players);
-      },
+        getAllPlayers: () => {
+          return Object.values(get().players);
+        },
 
-      // Moved from service - registerCard
-      registerCard: (playerId, card, initialZone = Zone.DISCARD) => {
-        const player = get().players[playerId];
-        if (!player) return;
+        // Moved from service - registerCard
+        registerCard: (playerId, card, initialZone = Zone.DISCARD) => {
+          const player = get().players[playerId];
+          if (!player) return;
 
-        const updatedPlayer = registerCardToPlayer(player, card, initialZone);
-        get().updatePlayer(playerId, updatedPlayer);
-      },
+          const updatedPlayer = registerCardToPlayer(player, card, initialZone);
+          get().updatePlayer(playerId, updatedPlayer);
+        },
 
-      // Moved from service - moveCardBetweenZones
-      moveCardBetweenZones: (playerId, card, fromZone, toZone) => {
-        const player = get().players[playerId];
-        if (!player) return;
+        // Moved from service - moveCardBetweenZones
+        moveCardBetweenZones: (playerId, card, fromZone, toZone) => {
+          const player = get().players[playerId];
+          if (!player) return;
 
-        const updatedPlayer = moveCardBetweenZones(
-          player,
-          card,
-          fromZone,
-          toZone
-        );
-        get().updatePlayer(playerId, updatedPlayer);
-      },
+          const updatedPlayer = moveCardBetweenZones(
+            player,
+            card,
+            fromZone,
+            toZone
+          );
+          get().updatePlayer(playerId, updatedPlayer);
+        },
 
-      // Wrapper actions for service functions
-      drawPlayerCard: (playerId) => {
-        const player = get().players[playerId];
-        if (!player) return { drawnCard: null };
+        // Wrapper actions for service functions
+        drawPlayerCard: (playerId) => {
+          const player = get().players[playerId];
+          if (!player) return { drawnCard: null };
 
-        const result = drawCard(player);
-        get().updatePlayer(playerId, result.player);
-        return { drawnCard: result.drawnCard };
-      },
-
-      drawPlayerHand: (playerId, handSize) => {
-        const player = get().players[playerId];
-        if (!player) return { drawnCards: [] };
-
-        const result = drawHand(player, handSize);
-        get().updatePlayer(playerId, result.player);
-        return { drawnCards: result.drawnCards };
-      },
-
-      playPlayerCard: (playerId, card) => {
-        const player = get().players[playerId];
-        if (!player) return false;
-
-        const result = playCard(player, card);
-        if (result.success) {
+          const result = drawCard(player);
           get().updatePlayer(playerId, result.player);
-        }
-        return result.success;
-      },
+          return { drawnCard: result.drawnCard };
+        },
 
-      discardPlayerCard: (playerId, card, fromZone = Zone.HAND) => {
-        const player = get().players[playerId];
-        if (!player) return false;
+        drawPlayerHand: (playerId, handSize) => {
+          const player = get().players[playerId];
+          if (!player) return { drawnCards: [] };
 
-        const result = discardCard(player, card, fromZone);
-        if (result.success) {
+          const result = drawHand(player, handSize);
           get().updatePlayer(playerId, result.player);
-        }
-        return result.success;
-      },
+          return { drawnCards: result.drawnCards };
+        },
 
-      discardAllPlayerInPlay: (playerId) => {
-        const player = get().players[playerId];
-        if (!player) return;
+        playPlayerCard: (playerId, card) => {
+          const player = get().players[playerId];
+          if (!player) return false;
 
-        const updatedPlayer = discardAllInPlay(player);
-        get().updatePlayer(playerId, updatedPlayer);
-      },
+          const result = playCard(player, card);
+          if (result.success) {
+            get().updatePlayer(playerId, result.player);
+          }
+          return result.success;
+        },
 
-      discardAllPlayerInHand: (playerId) => {
-        const player = get().players[playerId];
-        if (!player) return;
+        discardPlayerCard: (playerId, card, fromZone = Zone.HAND) => {
+          const player = get().players[playerId];
+          if (!player) return false;
 
-        const updatedPlayer = discardAllInHand(player);
-        get().updatePlayer(playerId, updatedPlayer);
-      },
+          const result = discardCard(player, card, fromZone);
+          if (result.success) {
+            get().updatePlayer(playerId, result.player);
+          }
+          return result.success;
+        },
 
-      shufflePlayerDeck: (playerId) => {
-        const player = get().players[playerId];
-        if (!player) return;
+        discardAllPlayerInPlay: (playerId) => {
+          const player = get().players[playerId];
+          if (!player) return;
 
-        const updatedPlayer = shuffleDeck(player);
-        get().updatePlayer(playerId, updatedPlayer);
-      },
+          const updatedPlayer = discardAllInPlay(player);
+          get().updatePlayer(playerId, updatedPlayer);
+        },
 
-      trashPlayerCard: (playerId, card, fromZone) => {
-        const player = get().players[playerId];
-        if (!player) return false;
+        discardAllPlayerInHand: (playerId) => {
+          const player = get().players[playerId];
+          if (!player) return;
 
-        const result = trashCard(player, card, fromZone);
-        if (result.success) {
-          get().updatePlayer(playerId, result.player);
-        }
-        return result.success;
-      },
-    }),
-    'playerStore'
+          const updatedPlayer = discardAllInHand(player);
+          get().updatePlayer(playerId, updatedPlayer);
+        },
+
+        shufflePlayerDeck: (playerId) => {
+          const player = get().players[playerId];
+          if (!player) return;
+
+          const updatedPlayer = shuffleDeck(player);
+          get().updatePlayer(playerId, updatedPlayer);
+        },
+
+        trashPlayerCard: (playerId, card, fromZone) => {
+          const player = get().players[playerId];
+          if (!player) return false;
+
+          const result = trashCard(player, card, fromZone);
+          if (result.success) {
+            get().updatePlayer(playerId, result.player);
+          }
+          return result.success;
+        },
+      }),
+      'playerStore'
+    ),
+    {
+      name: 'player-store',
+      storage: createJSONStorage(() => localStorage),
+    }
   )
 );
 

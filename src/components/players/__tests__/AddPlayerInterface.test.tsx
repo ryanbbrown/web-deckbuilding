@@ -9,7 +9,7 @@ describe('AddPlayerInterface Component', () => {
     startingHandSize: 5,
     startingDeckComposition: {},
     players: [],
-    market: { catalog: new Set() },
+    market: { catalog: [] },
   };
 
   const defaultProps = {

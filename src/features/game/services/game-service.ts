@@ -6,7 +6,7 @@ import { Game } from '../types';
 
 export function createDefaultGame(): Game {
   return {
-    market: { catalog: new Set() },
+    market: { catalog: [] },
     players: [],
     startingDeckComposition: null,
     startingHandSize: 5,
