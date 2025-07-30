@@ -39,6 +39,56 @@ describe('Market Store', () => {
     });
   });
 
+  describe('addMultipleCardDefinitions', () => {
+    it('should add multiple card definitions to the market', () => {
+      const cardDef1 = createCardDefinition('Card 1', 'Text 1', 1);
+      const cardDef2 = createCardDefinition('Card 2', 'Text 2', 2);
+      const cardDef3 = createCardDefinition('Card 3', 'Text 3', 3);
+      const { addMultipleCardDefinitions, hasCardDefinition } =
+        useMarketStore.getState();
+
+      addMultipleCardDefinitions([cardDef1, cardDef2, cardDef3]);
+
+      expect(hasCardDefinition(cardDef1)).toBe(true);
+      expect(hasCardDefinition(cardDef2)).toBe(true);
+      expect(hasCardDefinition(cardDef3)).toBe(true);
+      expect(useMarketStore.getState().catalog.length).toBe(3);
+    });
+
+    it('should add multiple cards to existing catalog', () => {
+      const existingCard = createCardDefinition('Existing', 'Already there', 0);
+      const newCard1 = createCardDefinition('New 1', 'First new', 1);
+      const newCard2 = createCardDefinition('New 2', 'Second new', 2);
+      const { addCardDefinition, addMultipleCardDefinitions } =
+        useMarketStore.getState();
+
+      addCardDefinition(existingCard);
+      expect(useMarketStore.getState().catalog.length).toBe(1);
+
+      addMultipleCardDefinitions([newCard1, newCard2]);
+      expect(useMarketStore.getState().catalog.length).toBe(3);
+    });
+
+    it('should handle empty array gracefully', () => {
+      const { addMultipleCardDefinitions } = useMarketStore.getState();
+
+      addMultipleCardDefinitions([]);
+
+      expect(useMarketStore.getState().catalog.length).toBe(0);
+    });
+
+    it('should handle single card in array', () => {
+      const cardDef = createCardDefinition('Single Card', 'Only one', 1);
+      const { addMultipleCardDefinitions, hasCardDefinition } =
+        useMarketStore.getState();
+
+      addMultipleCardDefinitions([cardDef]);
+
+      expect(hasCardDefinition(cardDef)).toBe(true);
+      expect(useMarketStore.getState().catalog.length).toBe(1);
+    });
+  });
+
   describe('removeCardDefinition', () => {
     it('should remove a card definition from the market', () => {
       const cardDef = createCardDefinition('Test Card', 'Test text');

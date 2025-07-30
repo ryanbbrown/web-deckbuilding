@@ -9,6 +9,7 @@ interface MarketSectionProps {
   updateDeckQuantity: (cardUid: string, increment: boolean) => void;
   handleDragStart: (e: React.DragEvent, cardDefinition: CardDefinition) => void;
   onShowAddCardModal: () => void;
+  onShowBulkAddCardModal: () => void;
   onStartDeckComposition: () => void;
   game: Game | null;
 }
@@ -20,6 +21,7 @@ export function MarketSection({
   updateDeckQuantity,
   handleDragStart,
   onShowAddCardModal,
+  onShowBulkAddCardModal,
   onStartDeckComposition,
   game,
 }: MarketSectionProps) {
@@ -91,16 +93,20 @@ export function MarketSection({
 
       {/* Market Actions Panel */}
       <div className="mb-8">
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">
-          Market Actions
-        </h3>
-        <div className="flex gap-4">
+        <div className="flex gap-4 flex-wrap">
           <button
             onClick={onShowAddCardModal}
             className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
             disabled={isSelectingDeckComposition}
           >
             Add Card to Market
+          </button>
+          <button
+            onClick={onShowBulkAddCardModal}
+            className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors"
+            disabled={isSelectingDeckComposition}
+          >
+            Add Multiple Cards to Market
           </button>
           <button
             onClick={onStartDeckComposition}

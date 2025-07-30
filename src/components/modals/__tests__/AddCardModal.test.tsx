@@ -180,9 +180,74 @@ describe('AddCardModal Component', () => {
       expect(screen.getByText('Cancel')).toBeInTheDocument();
     });
 
-    it('calls onAddCard when Add Card button is clicked', async () => {
-      const user = userEvent.setup();
+    it('disables Add Card button when form fields are empty', () => {
       render(<AddCardModal {...defaultProps} />);
+
+      const addButton = screen.getByText('Add Card');
+      expect(addButton).toBeDisabled();
+    });
+
+    it('disables Add Card button when only name is filled', () => {
+      const partialForm = {
+        name: 'Fire Spell',
+        text: '',
+        cost: 2,
+      };
+
+      render(<AddCardModal {...defaultProps} cardForm={partialForm} />);
+
+      const addButton = screen.getByText('Add Card');
+      expect(addButton).toBeDisabled();
+    });
+
+    it('disables Add Card button when only text is filled', () => {
+      const partialForm = {
+        name: '',
+        text: 'Deal 3 damage',
+        cost: 2,
+      };
+
+      render(<AddCardModal {...defaultProps} cardForm={partialForm} />);
+
+      const addButton = screen.getByText('Add Card');
+      expect(addButton).toBeDisabled();
+    });
+
+    it('enables Add Card button when both name and text are filled', () => {
+      const completedForm = {
+        name: 'Fire Spell',
+        text: 'Deal 3 damage',
+        cost: 2,
+      };
+
+      render(<AddCardModal {...defaultProps} cardForm={completedForm} />);
+
+      const addButton = screen.getByText('Add Card');
+      expect(addButton).not.toBeDisabled();
+    });
+
+    it('disables Add Card button when name or text contain only whitespace', () => {
+      const whitespaceForm = {
+        name: '   ',
+        text: '  \t  ',
+        cost: 2,
+      };
+
+      render(<AddCardModal {...defaultProps} cardForm={whitespaceForm} />);
+
+      const addButton = screen.getByText('Add Card');
+      expect(addButton).toBeDisabled();
+    });
+
+    it('calls onAddCard when Add Card button is clicked and form is valid', async () => {
+      const user = userEvent.setup();
+      const completedForm = {
+        name: 'Fire Spell',
+        text: 'Deal 3 damage',
+        cost: 2,
+      };
+
+      render(<AddCardModal {...defaultProps} cardForm={completedForm} />);
 
       const addButton = screen.getByText('Add Card');
       await user.click(addButton);

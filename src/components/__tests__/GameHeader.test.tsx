@@ -38,7 +38,7 @@ describe('GameHeader Component', () => {
 
   it('displays the main title', () => {
     render(<GameHeader game={null} playersCount={0} />);
-    expect(screen.getByText('Deck Building Game')).toBeInTheDocument();
+    expect(screen.getByText('Deckbuilding Sandbox')).toBeInTheDocument();
   });
 
   describe('when game is null', () => {
