@@ -50,7 +50,7 @@ export function GameHeader({ game, playersCount }: GameHeaderProps) {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Deck Building Game
+            Deckbuilding Sandbox
           </h1>
           <p className="text-gray-600">
             {game
