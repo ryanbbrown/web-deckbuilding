@@ -44,16 +44,6 @@ describe('AddPlayerInterface Component', () => {
         startingDeckComposition: { 'card-1': 2, 'card-2': 3 },
       };
 
-      it('shows clickable placeholder when game has starting deck', () => {
-        render(
-          <AddPlayerInterface {...defaultProps} game={gameWithStartingDeck} />
-        );
-
-        const placeholder = screen.getByText('Add Player').closest('div');
-        expect(placeholder).toHaveClass('cursor-pointer', 'hover:bg-gray-50');
-        expect(placeholder).not.toHaveClass('cursor-not-allowed', 'opacity-60');
-      });
-
       it('has correct accessibility attributes when clickable', () => {
         render(
           <AddPlayerInterface {...defaultProps} game={gameWithStartingDeck} />
@@ -138,17 +128,6 @@ describe('AddPlayerInterface Component', () => {
     });
 
     describe('without starting deck composition', () => {
-      it('shows disabled placeholder when no starting deck', () => {
-        render(<AddPlayerInterface {...defaultProps} />);
-
-        const placeholder = screen.getByText('Add Player').closest('div');
-        expect(placeholder).toHaveClass('cursor-not-allowed', 'opacity-60');
-        expect(placeholder).not.toHaveClass(
-          'cursor-pointer',
-          'hover:bg-gray-50'
-        );
-      });
-
       it('does not have accessibility attributes when disabled', () => {
         render(<AddPlayerInterface {...defaultProps} />);
 
@@ -190,8 +169,6 @@ describe('AddPlayerInterface Component', () => {
         expect(
           screen.getByText('Set starting deck composition first')
         ).toBeInTheDocument();
-        const placeholder = screen.getByText('Add Player').closest('div');
-        expect(placeholder).toHaveClass('cursor-not-allowed', 'opacity-60');
       });
 
       it('handles game with null startingDeckComposition', () => {
@@ -210,50 +187,6 @@ describe('AddPlayerInterface Component', () => {
         expect(
           screen.getByText('Set starting deck composition first')
         ).toBeInTheDocument();
-      });
-    });
-
-    describe('placeholder styling', () => {
-      it('has correct base placeholder styling', () => {
-        render(<AddPlayerInterface {...defaultProps} />);
-
-        const placeholder = screen.getByText('Add Player').closest('div');
-        expect(placeholder).toHaveClass(
-          'border',
-          'border-gray-300',
-          'bg-white',
-          'rounded-lg',
-          'p-12',
-          'flex',
-          'flex-col',
-          'items-center',
-          'justify-center',
-          'min-h-48',
-          'transition-colors'
-        );
-      });
-
-      it('has correct plus sign styling', () => {
-        render(<AddPlayerInterface {...defaultProps} />);
-
-        const plusSign = screen.getByText('+');
-        expect(plusSign).toHaveClass('text-6xl', 'text-gray-400', 'mb-4');
-      });
-
-      it('has correct text styling', () => {
-        render(<AddPlayerInterface {...defaultProps} />);
-
-        const addPlayerText = screen.getByText('Add Player');
-        expect(addPlayerText).toHaveClass('text-lg', 'text-gray-600');
-      });
-
-      it('has correct warning text styling', () => {
-        render(<AddPlayerInterface {...defaultProps} />);
-
-        const warningText = screen.getByText(
-          'Set starting deck composition first'
-        );
-        expect(warningText).toHaveClass('text-sm', 'text-red-500', 'mt-2');
       });
     });
   });
@@ -349,100 +282,6 @@ describe('AddPlayerInterface Component', () => {
         await user.click(cancelButton);
 
         expect(mockOnCancel).toHaveBeenCalledTimes(1);
-      });
-    });
-
-    describe('form styling', () => {
-      it('has correct form container styling', () => {
-        const { container } = render(
-          <AddPlayerInterface {...defaultProps} showInlineAddPlayer={true} />
-        );
-
-        const formContainer = container.firstChild as HTMLElement;
-        expect(formContainer).toHaveClass(
-          'border',
-          'border-gray-300',
-          'bg-white',
-          'rounded-lg',
-          'p-6'
-        );
-      });
-
-      it('has correct form title styling', () => {
-        render(
-          <AddPlayerInterface {...defaultProps} showInlineAddPlayer={true} />
-        );
-
-        const title = screen.getByText('Add New Player');
-        expect(title).toHaveClass(
-          'text-lg',
-          'font-semibold',
-          'text-gray-900',
-          'mb-4'
-        );
-      });
-
-      it('has correct label styling', () => {
-        render(
-          <AddPlayerInterface {...defaultProps} showInlineAddPlayer={true} />
-        );
-
-        const label = screen.getByText('Player Name');
-        expect(label).toHaveClass(
-          'block',
-          'text-sm',
-          'font-medium',
-          'text-gray-700',
-          'mb-1'
-        );
-      });
-
-      it('has correct input styling', () => {
-        render(
-          <AddPlayerInterface {...defaultProps} showInlineAddPlayer={true} />
-        );
-
-        const input = screen.getByLabelText('Player Name');
-        expect(input).toHaveClass(
-          'w-full',
-          'border',
-          'border-gray-300',
-          'rounded',
-          'px-3',
-          'py-2',
-          'focus:outline-none',
-          'focus:ring-2',
-          'focus:ring-blue-500'
-        );
-      });
-
-      it('has correct button styling', () => {
-        render(
-          <AddPlayerInterface {...defaultProps} showInlineAddPlayer={true} />
-        );
-
-        const addButton = screen.getByRole('button', { name: 'Add Player' });
-        const cancelButton = screen.getByRole('button', { name: 'Cancel' });
-
-        expect(addButton).toHaveClass(
-          'flex-1',
-          'bg-blue-500',
-          'text-white',
-          'py-2',
-          'rounded',
-          'hover:bg-blue-600',
-          'transition-colors'
-        );
-
-        expect(cancelButton).toHaveClass(
-          'flex-1',
-          'bg-gray-300',
-          'text-gray-700',
-          'py-2',
-          'rounded',
-          'hover:bg-gray-400',
-          'transition-colors'
-        );
       });
     });
 

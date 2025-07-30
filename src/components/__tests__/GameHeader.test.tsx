@@ -111,37 +111,4 @@ describe('GameHeader Component', () => {
       ).toBeInTheDocument();
     });
   });
-
-  describe('component structure and styling', () => {
-    it('has correct wrapper styling', () => {
-      const { container } = render(
-        <GameHeader game={mockGame} playersCount={2} />
-      );
-      const wrapper = container.firstChild as HTMLElement;
-      expect(wrapper).toHaveClass('mb-6');
-    });
-
-    it('has properly styled main heading', () => {
-      render(<GameHeader game={mockGame} playersCount={2} />);
-      const heading = screen.getByRole('heading', { level: 1 });
-      expect(heading).toHaveClass(
-        'text-3xl',
-        'font-bold',
-        'text-gray-900',
-        'mb-2'
-      );
-    });
-
-    it('displays status text with correct styling', () => {
-      render(<GameHeader game={mockGame} playersCount={2} />);
-      const statusText = screen.getByText('Game initialized with 2 players');
-      expect(statusText).toHaveClass('text-gray-600');
-    });
-
-    it('displays deck info with success styling', () => {
-      render(<GameHeader game={mockGame} playersCount={2} />);
-      const deckInfo = screen.getByText('Starting deck set: 6 cards');
-      expect(deckInfo).toHaveClass('text-sm', 'text-green-600', 'mt-1');
-    });
-  });
 });

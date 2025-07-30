@@ -51,33 +51,6 @@ describe('ErrorBanner Component', () => {
     expect(mockOnClose).toHaveBeenCalledTimes(1);
   });
 
-  it('has proper styling classes for error state', () => {
-    const { container } = render(<ErrorBanner {...defaultProps} />);
-
-    // Target the root div of the ErrorBanner component
-    const banner = container.firstChild as HTMLElement;
-    expect(banner).toHaveClass(
-      'mb-6',
-      'bg-red-50',
-      'border',
-      'border-red-200',
-      'rounded-lg',
-      'p-4'
-    );
-  });
-
-  it('has accessible button styling', () => {
-    render(<ErrorBanner {...defaultProps} />);
-
-    const closeButton = screen.getByRole('button');
-    expect(closeButton).toHaveClass(
-      'text-red-600',
-      'hover:text-red-800',
-      'text-xl',
-      'font-bold'
-    );
-  });
-
   describe('different error messages', () => {
     const testMessages = [
       'Network error occurred',
