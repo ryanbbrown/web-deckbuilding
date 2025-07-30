@@ -8,7 +8,7 @@ describe('Game Service', () => {
     it('should create a game with default values', () => {
       const game = createDefaultGame();
 
-      expect(game.market).toEqual({ catalog: new Set() });
+      expect(game.market).toEqual({ catalog: [] });
       expect(game.players).toEqual([]);
       expect(game.startingDeckComposition).toBeNull();
       expect(game.startingHandSize).toBe(5);

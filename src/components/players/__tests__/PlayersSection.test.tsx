@@ -55,7 +55,7 @@ describe('PlayersSection Component', () => {
     startingHandSize: 5,
     startingDeckComposition: { 'card-1': 2 },
     players: [],
-    market: { catalog: new Set() },
+    market: { catalog: [] },
   };
 
   const defaultProps = {

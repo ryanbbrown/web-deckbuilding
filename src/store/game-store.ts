@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { logger } from './logger';
 import { Game } from '../features/game/types';
 import { Player } from '../features/player/types';
@@ -33,104 +34,110 @@ interface GameState extends Record<string, unknown> {
 }
 
 const useGameStore = create<GameState>()(
-  logger<GameState>(
-    (set, get) => ({
-      game: null,
+  persist(
+    logger<GameState>(
+      (set, get) => ({
+        game: null,
 
-      createGame: () => {
-        set({
-          game: createDefaultGame(),
-        });
-      },
-
-      setStartingDeckComposition: (composition) => {
-        set((state) => {
-          if (!state.game) return state;
-          return {
-            game: {
-              ...state.game,
-              startingDeckComposition: composition,
-            },
-          };
-        });
-      },
-
-      setStartingHandSize: (size) => {
-        set((state) => {
-          if (!state.game) return state;
-          return {
-            game: {
-              ...state.game,
-              startingHandSize: size,
-            },
-          };
-        });
-      },
-
-      reset: () => {
-        set({ game: null });
-        useMarketStore.getState().reset();
-        usePlayerStore.getState().reset();
-      },
-
-      // Coordination actions
-      addCardToMarket: (cardDefinition) => {
-        const currentGame = get().game;
-        if (!currentGame) return;
-
-        useMarketStore.getState().addCardDefinition(cardDefinition);
-
-        set((state) => {
-          if (!state.game) return state;
-          return {
-            game: {
-              ...state.game,
-              market: {
-                catalog: useMarketStore.getState().catalog,
-              },
-            },
-          };
-        });
-      },
-
-      addPlayerToGame: (player, cardDefinitions) => {
-        const currentGame = get().game;
-        if (!currentGame) return false;
-
-        const result = addPlayer(currentGame, player, cardDefinitions);
-
-        if (result.success) {
-          // Add player to player store
-          usePlayerStore
-            .getState()
-            .addPlayer(result.game.players[result.game.players.length - 1]);
-
-          // Update game state
+        createGame: () => {
           set({
-            game: {
-              ...result.game,
-              players: [], // Players are now managed by player store
-            },
+            game: createDefaultGame(),
           });
-        }
+        },
 
-        return result.success;
-      },
+        setStartingDeckComposition: (composition) => {
+          set((state) => {
+            if (!state.game) return state;
+            return {
+              game: {
+                ...state.game,
+                startingDeckComposition: composition,
+              },
+            };
+          });
+        },
 
-      // Selectors
-      getGame: () => {
-        return get().game;
-      },
+        setStartingHandSize: (size) => {
+          set((state) => {
+            if (!state.game) return state;
+            return {
+              game: {
+                ...state.game,
+                startingHandSize: size,
+              },
+            };
+          });
+        },
 
-      getPlayer: (playerId) => {
-        return usePlayerStore.getState().getPlayer(playerId) || null;
-      },
+        reset: () => {
+          set({ game: null });
+          useMarketStore.getState().reset();
+          usePlayerStore.getState().reset();
+        },
 
-      getAllPlayers: () => {
-        return usePlayerStore.getState().getAllPlayers();
-      },
-    }),
-    'gameStore'
+        // Coordination actions
+        addCardToMarket: (cardDefinition) => {
+          const currentGame = get().game;
+          if (!currentGame) return;
+
+          useMarketStore.getState().addCardDefinition(cardDefinition);
+
+          set((state) => {
+            if (!state.game) return state;
+            return {
+              game: {
+                ...state.game,
+                market: {
+                  catalog: useMarketStore.getState().catalog,
+                },
+              },
+            };
+          });
+        },
+
+        addPlayerToGame: (player, cardDefinitions) => {
+          const currentGame = get().game;
+          if (!currentGame) return false;
+
+          const result = addPlayer(currentGame, player, cardDefinitions);
+
+          if (result.success) {
+            // Add player to player store
+            usePlayerStore
+              .getState()
+              .addPlayer(result.game.players[result.game.players.length - 1]);
+
+            // Update game state
+            set({
+              game: {
+                ...result.game,
+                players: [], // Players are now managed by player store
+              },
+            });
+          }
+
+          return result.success;
+        },
+
+        // Selectors
+        getGame: () => {
+          return get().game;
+        },
+
+        getPlayer: (playerId) => {
+          return usePlayerStore.getState().getPlayer(playerId) || null;
+        },
+
+        getAllPlayers: () => {
+          return usePlayerStore.getState().getAllPlayers();
+        },
+      }),
+      'gameStore'
+    ),
+    {
+      name: 'game-store',
+      storage: createJSONStorage(() => localStorage),
+    }
   )
 );
 

@@ -1,0 +1,3 @@
+Please add a new feature to optionally show the full composition of the player's deck within the player window
+
+I think this can just be based on allcards, so only front-end edits should be necessary. Next to the "draw hand" button, there should be a "show deck comp" button. When clicked, it should toggle the visibility of a section below the player's hand but above the buttons (draw card / draw hand buttons). That section should display the player's allCards like so: "Copper (7), Estate (3)". It can be relatively minimal design.
