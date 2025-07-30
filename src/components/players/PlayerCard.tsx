@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Player } from '@/features/player/types';
 import { Zone, CardInstance } from '@/features/cards/types';
 import { CardZone } from './zones/CardZone';
 import { CardActionHandlers } from '@/types/ui';
+import { DeckComposition } from './DeckComposition';
 
 interface PlayerCardProps {
   player: Player;
@@ -14,6 +15,7 @@ interface PlayerCardProps {
   ) => void;
   onDrawCard: CardActionHandlers['onDrawCard'];
   onDrawHand: CardActionHandlers['onDrawHand'];
+  onDiscardAll: CardActionHandlers['onDiscardAll'];
   onDragOver: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent, playerId: string, zone: Zone) => void;
 }
@@ -23,9 +25,12 @@ export function PlayerCard({
   onCardClick,
   onDrawCard,
   onDrawHand,
+  onDiscardAll,
   onDragOver,
   onDrop,
 }: PlayerCardProps) {
+  const [showDeckComposition, setShowDeckComposition] = useState(false);
+  const [showAllDiscardCards, setShowAllDiscardCards] = useState(false);
   return (
     <div
       className="border border-gray-300 bg-white rounded-lg p-6"
@@ -53,6 +58,8 @@ export function PlayerCard({
           onCardClick={(card, zone, event) =>
             onCardClick(card, player.playerId, zone, event)
           }
+          showAllCards={showAllDiscardCards}
+          onToggleView={() => setShowAllDiscardCards(!showAllDiscardCards)}
         />
 
         {/* Play Area */}
@@ -74,6 +81,9 @@ export function PlayerCard({
         />
       </div>
 
+      {/* Deck Composition Section */}
+      {showDeckComposition && <DeckComposition allCards={player.allCards} />}
+
       {/* Player Actions */}
       <div className="mt-4 flex gap-2">
         <button
@@ -87,6 +97,18 @@ export function PlayerCard({
           className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 transition-colors"
         >
           Draw Hand
+        </button>
+        <button
+          onClick={() => onDiscardAll(player.playerId)}
+          className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition-colors"
+        >
+          Discard All
+        </button>
+        <button
+          onClick={() => setShowDeckComposition(!showDeckComposition)}
+          className="bg-purple-500 text-white px-3 py-1 rounded text-sm hover:bg-purple-600 transition-colors"
+        >
+          {showDeckComposition ? 'Hide Deck Comp' : 'Show Deck Comp'}
         </button>
       </div>
     </div>
