@@ -25,6 +25,7 @@ function App() {
   const getMarketCards = useMarketStore((state) => state.getMarketCards);
   const drawPlayerCard = usePlayerStore((state) => state.drawPlayerCard);
   const drawPlayerHand = usePlayerStore((state) => state.drawPlayerHand);
+  const discardAllPlayer = usePlayerStore((state) => state.discardAllPlayer);
 
   const playerStoreState = usePlayerStore((state) => state.players);
   const moveCardBetweenZones = usePlayerStore(
@@ -221,6 +222,16 @@ function App() {
     } catch (error) {
       console.error('Error drawing hand:', error);
       showError('Failed to draw hand. Check console for details.');
+    }
+  };
+
+  const handleDiscardAll = (playerId: string) => {
+    try {
+      discardAllPlayer(playerId);
+      console.log('Discarded all cards for player:', playerId);
+    } catch (error) {
+      console.error('Error discarding all cards:', error);
+      showError('Failed to discard all cards. Check console for details.');
     }
   };
 
@@ -428,6 +439,7 @@ function App() {
           onCardClick={handleCardClick}
           onDrawCard={handleDrawCard}
           onDrawHand={handleDrawHand}
+          onDiscardAll={handleDiscardAll}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
           onAddPlayer={handleAddPlayer}

@@ -306,6 +306,56 @@ describe('Player Store', () => {
       });
     });
 
+    describe('discardAllPlayer', () => {
+      it('should discard all cards from both hand and played area', () => {
+        const player = createPlayer('Test Player');
+        const cardDefs = Array.from({ length: 5 }, (_, i) =>
+          createCardDefinition(`Card ${i}`, `Text ${i}`)
+        );
+        const { addPlayer, registerCard, discardAllPlayer, getPlayer } =
+          usePlayerStore.getState();
+
+        addPlayer(player);
+
+        for (let i = 0; i < 3; i++) {
+          const cardInstance = createCardInstance(cardDefs[i]);
+          registerCard(player.playerId, cardInstance, Zone.HAND);
+        }
+
+        for (let i = 3; i < 5; i++) {
+          const cardInstance = createCardInstance(cardDefs[i]);
+          registerCard(player.playerId, cardInstance, Zone.PLAYED);
+        }
+
+        discardAllPlayer(player.playerId);
+
+        const updatedPlayer = getPlayer(player.playerId)!;
+        expect(updatedPlayer.hand).toHaveLength(0);
+        expect(updatedPlayer.played).toHaveLength(0);
+        expect(updatedPlayer.discard).toHaveLength(5);
+      });
+
+      it('should handle empty hand and played area', () => {
+        const player = createPlayer('Test Player');
+        const { addPlayer, discardAllPlayer, getPlayer } =
+          usePlayerStore.getState();
+
+        addPlayer(player);
+        discardAllPlayer(player.playerId);
+
+        const updatedPlayer = getPlayer(player.playerId)!;
+        expect(updatedPlayer.hand).toHaveLength(0);
+        expect(updatedPlayer.played).toHaveLength(0);
+        expect(updatedPlayer.discard).toHaveLength(0);
+      });
+
+      it('should handle non-existent player gracefully', () => {
+        const { discardAllPlayer } = usePlayerStore.getState();
+
+        discardAllPlayer('non-existent');
+      });
+    });
+
     describe('shufflePlayerDeck', () => {
       it('should shuffle the player deck', () => {
         const player = createPlayer('Test Player');
