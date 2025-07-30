@@ -1,9 +1,10 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { logger } from './logger';
 import { CardDefinition } from '../features/cards/types';
 
 interface MarketState extends Record<string, unknown> {
-  catalog: Set<CardDefinition>;
+  catalog: CardDefinition[];
   addCardDefinition: (cardDefinition: CardDefinition) => void;
   removeCardDefinition: (cardDefinition: CardDefinition) => void;
   reset: () => void;
@@ -12,37 +13,41 @@ interface MarketState extends Record<string, unknown> {
 }
 
 const useMarketStore = create<MarketState>()(
-  logger<MarketState>(
-    (set, get) => ({
-      catalog: new Set<CardDefinition>(),
+  persist(
+    logger<MarketState>(
+      (set, get) => ({
+        catalog: [],
 
-      addCardDefinition: (cardDefinition) => {
-        set((state) => ({
-          catalog: new Set([...state.catalog, cardDefinition]),
-        }));
-      },
+        addCardDefinition: (cardDefinition) => {
+          set((state) => ({
+            catalog: [...state.catalog, cardDefinition],
+          }));
+        },
 
-      removeCardDefinition: (cardDefinition) => {
-        set((state) => {
-          const newCatalog = new Set(state.catalog);
-          newCatalog.delete(cardDefinition);
-          return { catalog: newCatalog };
-        });
-      },
+        removeCardDefinition: (cardDefinition) => {
+          set((state) => ({
+            catalog: state.catalog.filter((card) => card !== cardDefinition),
+          }));
+        },
 
-      reset: () => {
-        set({ catalog: new Set<CardDefinition>() });
-      },
+        reset: () => {
+          set({ catalog: [] });
+        },
 
-      hasCardDefinition: (cardDefinition) => {
-        return get().catalog.has(cardDefinition);
-      },
+        hasCardDefinition: (cardDefinition) => {
+          return get().catalog.includes(cardDefinition);
+        },
 
-      getMarketCards: () => {
-        return Array.from(get().catalog);
-      },
-    }),
-    'marketStore'
+        getMarketCards: () => {
+          return get().catalog;
+        },
+      }),
+      'marketStore'
+    ),
+    {
+      name: 'market-store',
+      storage: createJSONStorage(() => localStorage),
+    }
   )
 );
 

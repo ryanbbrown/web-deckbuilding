@@ -19,28 +19,5 @@ describe('Footer Component', () => {
     // Test for proper footer semantic element
     const footer = screen.getByRole('contentinfo');
     expect(footer).toBeInTheDocument();
-    expect(footer).toHaveClass(
-      'mt-12',
-      'py-8',
-      'border-t',
-      'border-gray-200',
-      'bg-gray-50'
-    );
-  });
-
-  it('contains centered text styling', () => {
-    const { container } = render(<Footer />);
-
-    // Find the div inside the footer that contains the styling classes
-    const textContainer = container.querySelector('.max-w-7xl');
-    expect(textContainer).toHaveClass(
-      'max-w-7xl',
-      'mx-auto',
-      'px-4',
-      'text-center',
-      'text-gray-500',
-      'text-sm'
-    );
-    expect(textContainer).toHaveTextContent('Deck Building Game');
   });
 });

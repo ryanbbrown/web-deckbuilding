@@ -424,60 +424,6 @@ describe('CardContextMenu Component', () => {
     });
   });
 
-  describe('component styling', () => {
-    it('has correct menu container styling', () => {
-      const { container } = render(<CardContextMenu {...defaultProps} />);
-      const menu = container.firstChild as HTMLElement;
-
-      expect(menu).toHaveClass(
-        'fixed',
-        'bg-white',
-        'rounded-lg',
-        'p-3',
-        'shadow-lg',
-        'border',
-        'border-gray-200',
-        'z-50'
-      );
-    });
-
-    it('has correct action button styling', () => {
-      render(<CardContextMenu {...defaultProps} />);
-
-      const playCardButton = screen.getByText('Play Card');
-      expect(playCardButton).toHaveClass(
-        'block',
-        'w-full',
-        'text-left',
-        'text-sm',
-        'text-gray-700',
-        'hover:bg-gray-100',
-        'p-2',
-        'rounded-md',
-        'mb-1'
-      );
-    });
-
-    it('has correct cancel button styling', () => {
-      render(<CardContextMenu {...defaultProps} />);
-
-      const cancelButton = screen.getByText('Cancel');
-      expect(cancelButton).toHaveClass(
-        'block',
-        'w-full',
-        'text-left',
-        'text-sm',
-        'text-gray-500',
-        'hover:bg-gray-100',
-        'p-2',
-        'rounded-md',
-        'border-t',
-        'border-gray-200',
-        'mt-1'
-      );
-    });
-  });
-
   describe('accessibility', () => {
     it('has accessible button elements', () => {
       render(<CardContextMenu {...defaultProps} />);

@@ -1,29 +1,8 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import Articles from '@/features/articles/pages';
-import Home from '@/features/home/pages';
-import PrivateRoute from './private-route';
-import PublicRoute from './public-route';
+import { BrowserRouter, Routes } from 'react-router-dom';
 
 const Router = () => (
   <BrowserRouter>
-    <Routes>
-      <Route
-        path="/"
-        element={
-          <PublicRoute>
-            <Home />
-          </PublicRoute>
-        }
-      />
-      <Route
-        path="/articles"
-        element={
-          <PrivateRoute>
-            <Articles />
-          </PrivateRoute>
-        }
-      />
-    </Routes>
+    <Routes>{/* Routes will be added here as needed */}</Routes>
   </BrowserRouter>
 );
 
