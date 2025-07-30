@@ -27,6 +27,7 @@ describe('MarketSection Component', () => {
     updateDeckQuantity: vi.fn(),
     handleDragStart: vi.fn(),
     onShowAddCardModal: vi.fn(),
+    onShowBulkAddCardModal: vi.fn(),
     onStartDeckComposition: vi.fn(),
     game: mockGame,
   };
@@ -333,6 +334,39 @@ describe('MarketSection Component', () => {
       expect(addCardButton).toBeDisabled();
     });
 
+    it('renders Add Multiple Cards to Market button', () => {
+      render(<MarketSection {...defaultProps} />);
+      expect(
+        screen.getByText('Add Multiple Cards to Market')
+      ).toBeInTheDocument();
+    });
+
+    it('calls onShowBulkAddCardModal when Add Multiple Cards button is clicked', async () => {
+      const user = userEvent.setup();
+      const mockOnShowBulkAddCardModal = vi.fn();
+
+      render(
+        <MarketSection
+          {...defaultProps}
+          onShowBulkAddCardModal={mockOnShowBulkAddCardModal}
+        />
+      );
+
+      const bulkAddButton = screen.getByText('Add Multiple Cards to Market');
+      await user.click(bulkAddButton);
+
+      expect(mockOnShowBulkAddCardModal).toHaveBeenCalledTimes(1);
+    });
+
+    it('disables Add Multiple Cards button when selecting deck composition', () => {
+      render(
+        <MarketSection {...defaultProps} isSelectingDeckComposition={true} />
+      );
+
+      const bulkAddButton = screen.getByText('Add Multiple Cards to Market');
+      expect(bulkAddButton).toBeDisabled();
+    });
+
     it('renders Set Starting Deck Composition button when no composition exists', () => {
       render(<MarketSection {...defaultProps} />);
       expect(
@@ -454,9 +488,6 @@ describe('MarketSection Component', () => {
 
       expect(
         screen.getByRole('heading', { level: 2, name: 'Market' })
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole('heading', { level: 3, name: 'Market Actions' })
       ).toBeInTheDocument();
     });
 

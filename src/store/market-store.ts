@@ -6,6 +6,7 @@ import { CardDefinition } from '../features/cards/types';
 interface MarketState extends Record<string, unknown> {
   catalog: CardDefinition[];
   addCardDefinition: (cardDefinition: CardDefinition) => void;
+  addMultipleCardDefinitions: (cardDefinitions: CardDefinition[]) => void;
   removeCardDefinition: (cardDefinition: CardDefinition) => void;
   reset: () => void;
   hasCardDefinition: (cardDefinition: CardDefinition) => boolean;
@@ -21,6 +22,12 @@ const useMarketStore = create<MarketState>()(
         addCardDefinition: (cardDefinition) => {
           set((state) => ({
             catalog: [...state.catalog, cardDefinition],
+          }));
+        },
+
+        addMultipleCardDefinitions: (cardDefinitions) => {
+          set((state) => ({
+            catalog: [...state.catalog, ...cardDefinitions],
           }));
         },
 

@@ -88,7 +88,8 @@ export function AddCardModal({
         <div className="flex gap-3 mt-6">
           <button
             onClick={onAddCard}
-            className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition-colors"
+            disabled={!cardForm.name.trim() || !cardForm.text.trim()}
+            className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
           >
             Add Card
           </button>
