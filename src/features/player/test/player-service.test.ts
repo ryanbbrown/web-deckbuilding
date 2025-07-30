@@ -10,6 +10,7 @@ import {
   discardCard,
   discardAllInPlay,
   discardAllInHand,
+  discardAll,
   trashCard,
   moveCardBetweenZones,
   registerCardToPlayer,
@@ -270,6 +271,80 @@ describe('Player Service', () => {
 
       expect(updatedPlayer.hand).toHaveLength(0);
       expect(updatedPlayer.discard).toHaveLength(0);
+    });
+  });
+
+  describe('discardAll', () => {
+    it('should discard all cards from both hand and played area', () => {
+      let player = createPlayer('Test Player');
+
+      const cardDefs = Array.from({ length: 5 }, (_, i) =>
+        createCardDefinition(`Card ${i}`, `Text ${i}`)
+      );
+
+      for (let i = 0; i < 3; i++) {
+        const cardInstance = createCardInstance(cardDefs[i]);
+        player = registerCardToPlayer(player, cardInstance, Zone.HAND);
+      }
+
+      for (let i = 3; i < 5; i++) {
+        const cardInstance = createCardInstance(cardDefs[i]);
+        player = registerCardToPlayer(player, cardInstance, Zone.PLAYED);
+      }
+
+      const updatedPlayer = discardAll(player);
+
+      expect(updatedPlayer.hand).toHaveLength(0);
+      expect(updatedPlayer.played).toHaveLength(0);
+      expect(updatedPlayer.discard).toHaveLength(5);
+    });
+
+    it('should handle empty hand and played area', () => {
+      const player = createPlayer('Test Player');
+
+      const updatedPlayer = discardAll(player);
+
+      expect(updatedPlayer.hand).toHaveLength(0);
+      expect(updatedPlayer.played).toHaveLength(0);
+      expect(updatedPlayer.discard).toHaveLength(0);
+    });
+
+    it('should handle only cards in hand', () => {
+      let player = createPlayer('Test Player');
+
+      const cardDefs = Array.from({ length: 2 }, (_, i) =>
+        createCardDefinition(`Card ${i}`, `Text ${i}`)
+      );
+
+      for (const cardDef of cardDefs) {
+        const cardInstance = createCardInstance(cardDef);
+        player = registerCardToPlayer(player, cardInstance, Zone.HAND);
+      }
+
+      const updatedPlayer = discardAll(player);
+
+      expect(updatedPlayer.hand).toHaveLength(0);
+      expect(updatedPlayer.played).toHaveLength(0);
+      expect(updatedPlayer.discard).toHaveLength(2);
+    });
+
+    it('should handle only cards in played area', () => {
+      let player = createPlayer('Test Player');
+
+      const cardDefs = Array.from({ length: 2 }, (_, i) =>
+        createCardDefinition(`Card ${i}`, `Text ${i}`)
+      );
+
+      for (const cardDef of cardDefs) {
+        const cardInstance = createCardInstance(cardDef);
+        player = registerCardToPlayer(player, cardInstance, Zone.PLAYED);
+      }
+
+      const updatedPlayer = discardAll(player);
+
+      expect(updatedPlayer.hand).toHaveLength(0);
+      expect(updatedPlayer.played).toHaveLength(0);
+      expect(updatedPlayer.discard).toHaveLength(2);
     });
   });
 

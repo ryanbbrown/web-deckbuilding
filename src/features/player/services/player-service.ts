@@ -152,6 +152,12 @@ export function discardAllInHand(player: Player): Player {
   return updatedPlayer;
 }
 
+export function discardAll(player: Player): Player {
+  let updatedPlayer = discardAllInPlay(player);
+  updatedPlayer = discardAllInHand(updatedPlayer);
+  return updatedPlayer;
+}
+
 export function trashCard(
   player: Player,
   card: CardInstance,

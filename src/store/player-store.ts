@@ -11,6 +11,7 @@ import {
   discardCard,
   discardAllInPlay,
   discardAllInHand,
+  discardAll,
   trashCard,
   moveCardBetweenZones,
   registerCardToPlayer,
@@ -56,6 +57,7 @@ interface PlayerState extends Record<string, unknown> {
   ) => boolean;
   discardAllPlayerInPlay: (playerId: string) => void;
   discardAllPlayerInHand: (playerId: string) => void;
+  discardAllPlayer: (playerId: string) => void;
   shufflePlayerDeck: (playerId: string) => void;
   trashPlayerCard: (
     playerId: string,
@@ -189,6 +191,14 @@ const usePlayerStore = create<PlayerState>()(
           if (!player) return;
 
           const updatedPlayer = discardAllInHand(player);
+          get().updatePlayer(playerId, updatedPlayer);
+        },
+
+        discardAllPlayer: (playerId) => {
+          const player = get().players[playerId];
+          if (!player) return;
+
+          const updatedPlayer = discardAll(player);
           get().updatePlayer(playerId, updatedPlayer);
         },
 

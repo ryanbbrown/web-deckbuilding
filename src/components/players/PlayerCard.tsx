@@ -15,6 +15,7 @@ interface PlayerCardProps {
   ) => void;
   onDrawCard: CardActionHandlers['onDrawCard'];
   onDrawHand: CardActionHandlers['onDrawHand'];
+  onDiscardAll: CardActionHandlers['onDiscardAll'];
   onDragOver: (e: React.DragEvent) => void;
   onDrop: (e: React.DragEvent, playerId: string, zone: Zone) => void;
 }
@@ -24,6 +25,7 @@ export function PlayerCard({
   onCardClick,
   onDrawCard,
   onDrawHand,
+  onDiscardAll,
   onDragOver,
   onDrop,
 }: PlayerCardProps) {
@@ -95,6 +97,12 @@ export function PlayerCard({
           className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 transition-colors"
         >
           Draw Hand
+        </button>
+        <button
+          onClick={() => onDiscardAll(player.playerId)}
+          className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition-colors"
+        >
+          Discard All
         </button>
         <button
           onClick={() => setShowDeckComposition(!showDeckComposition)}
