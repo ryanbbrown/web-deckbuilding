@@ -128,6 +128,85 @@ describe('Game Store', () => {
     });
   });
 
+  describe('addMultipleCardsToMarket', () => {
+    it('should add multiple cards to market and sync game state', () => {
+      const { createGame, addMultipleCardsToMarket, getGame } =
+        useGameStore.getState();
+      const cardDef1 = createCardDefinition('Card 1', 'First test card');
+      const cardDef2 = createCardDefinition('Card 2', 'Second test card');
+      const cardDef3 = createCardDefinition('Card 3', 'Third test card');
+      const cards = [cardDef1, cardDef2, cardDef3];
+
+      createGame();
+      addMultipleCardsToMarket(cards);
+
+      const game = getGame();
+
+      // Verify all cards are in market store
+      expect(useMarketStore.getState().hasCardDefinition(cardDef1)).toBe(true);
+      expect(useMarketStore.getState().hasCardDefinition(cardDef2)).toBe(true);
+      expect(useMarketStore.getState().hasCardDefinition(cardDef3)).toBe(true);
+
+      // Verify all cards are in game state
+      expect(game?.market.catalog.includes(cardDef1)).toBe(true);
+      expect(game?.market.catalog.includes(cardDef2)).toBe(true);
+      expect(game?.market.catalog.includes(cardDef3)).toBe(true);
+
+      // Verify total count
+      expect(game?.market.catalog).toHaveLength(3);
+      expect(useMarketStore.getState().catalog).toHaveLength(3);
+    });
+
+    it('should add cards to existing market cards', () => {
+      const { createGame, addCardToMarket, addMultipleCardsToMarket, getGame } =
+        useGameStore.getState();
+      const existingCard = createCardDefinition(
+        'Existing Card',
+        'Already in market'
+      );
+      const newCard1 = createCardDefinition('New Card 1', 'First new card');
+      const newCard2 = createCardDefinition('New Card 2', 'Second new card');
+
+      createGame();
+      addCardToMarket(existingCard);
+      addMultipleCardsToMarket([newCard1, newCard2]);
+
+      const game = getGame();
+
+      // Verify all cards are present
+      expect(game?.market.catalog).toHaveLength(3);
+      expect(game?.market.catalog.includes(existingCard)).toBe(true);
+      expect(game?.market.catalog.includes(newCard1)).toBe(true);
+      expect(game?.market.catalog.includes(newCard2)).toBe(true);
+    });
+
+    it('should handle empty array gracefully', () => {
+      const { createGame, addMultipleCardsToMarket, getGame } =
+        useGameStore.getState();
+
+      createGame();
+      const initialGame = getGame();
+      const initialCatalogLength = initialGame?.market.catalog.length || 0;
+
+      addMultipleCardsToMarket([]);
+
+      const game = getGame();
+      expect(game?.market.catalog).toHaveLength(initialCatalogLength);
+    });
+
+    it('should not add cards when no game exists', () => {
+      const { addMultipleCardsToMarket } = useGameStore.getState();
+      const cardDef1 = createCardDefinition('Test Card 1', 'Test text 1');
+      const cardDef2 = createCardDefinition('Test Card 2', 'Test text 2');
+
+      addMultipleCardsToMarket([cardDef1, cardDef2]);
+
+      expect(useMarketStore.getState().hasCardDefinition(cardDef1)).toBe(false);
+      expect(useMarketStore.getState().hasCardDefinition(cardDef2)).toBe(false);
+      expect(useMarketStore.getState().catalog).toHaveLength(0);
+    });
+  });
+
   describe('addPlayerToGame', () => {
     it('should add player with starting deck when composition is set', () => {
       const {

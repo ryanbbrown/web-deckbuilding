@@ -22,6 +22,7 @@ interface GameState extends Record<string, unknown> {
 
   // Coordination actions
   addCardToMarket: (cardDefinition: CardDefinition) => void;
+  addMultipleCardsToMarket: (cardDefinitions: CardDefinition[]) => void;
   addPlayerToGame: (
     player: Player,
     cardDefinitions: CardDefinition[]
@@ -81,6 +82,25 @@ const useGameStore = create<GameState>()(
           if (!currentGame) return;
 
           useMarketStore.getState().addCardDefinition(cardDefinition);
+
+          set((state) => {
+            if (!state.game) return state;
+            return {
+              game: {
+                ...state.game,
+                market: {
+                  catalog: useMarketStore.getState().catalog,
+                },
+              },
+            };
+          });
+        },
+
+        addMultipleCardsToMarket: (cardDefinitions) => {
+          const currentGame = get().game;
+          if (!currentGame) return;
+
+          useMarketStore.getState().addMultipleCardDefinitions(cardDefinitions);
 
           set((state) => {
             if (!state.game) return state;
