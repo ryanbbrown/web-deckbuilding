@@ -19,8 +19,8 @@ function App() {
   const game = useGameStore((state) => state.game);
 
   const addCardToMarket = useGameStore((state) => state.addCardToMarket);
-  const addMultipleCardsToMarket = useMarketStore(
-    (state) => state.addMultipleCardDefinitions
+  const addMultipleCardsToMarket = useGameStore(
+    (state) => state.addMultipleCardsToMarket
   );
   const setStartingDeckComposition = useGameStore(
     (state) => state.setStartingDeckComposition
