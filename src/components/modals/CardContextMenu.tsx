@@ -33,6 +33,7 @@ export function CardContextMenu({
         <button
           onClick={() => onMoveCard(Zone.PLAYED)}
           className="block w-full text-left text-sm text-gray-700 hover:bg-gray-100 p-2 rounded-md mb-1"
+          data-testid="play-card-btn"
         >
           Play Card
         </button>
@@ -41,6 +42,7 @@ export function CardContextMenu({
         <button
           onClick={() => onMoveCard(Zone.DISCARD)}
           className="block w-full text-left text-sm text-gray-700 hover:bg-gray-100 p-2 rounded-md mb-1"
+          data-testid="discard-card-btn"
         >
           Discard Card
         </button>
@@ -49,6 +51,7 @@ export function CardContextMenu({
         <button
           onClick={() => onMoveCard(Zone.HAND)}
           className="block w-full text-left text-sm text-gray-700 hover:bg-gray-100 p-2 rounded-md mb-1"
+          data-testid="return-to-hand-btn"
         >
           Return to Hand
         </button>
@@ -58,6 +61,7 @@ export function CardContextMenu({
         <button
           onClick={onTrashCard}
           className="block w-full text-left text-sm text-red-700 hover:bg-red-50 p-2 rounded-md mb-1"
+          data-testid="trash-card-btn"
         >
           Trash Card
         </button>

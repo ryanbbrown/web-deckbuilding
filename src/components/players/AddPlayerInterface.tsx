@@ -45,6 +45,7 @@ export function AddPlayerInterface({
               onChange={(e) => setPlayerName(e.target.value)}
               className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Enter player name"
+              data-testid="player-name-input"
             />
           </div>
         </div>
@@ -52,6 +53,7 @@ export function AddPlayerInterface({
           <button
             onClick={onAddPlayer}
             className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition-colors"
+            data-testid="add-player-btn"
           >
             Add Player
           </button>
@@ -86,6 +88,7 @@ export function AddPlayerInterface({
           ? 'cursor-pointer hover:bg-gray-50'
           : 'cursor-not-allowed opacity-60'
       }`}
+      data-testid="add-player-rectangle"
     >
       <div className="text-6xl text-gray-400 mb-4">+</div>
       <p className="text-lg text-gray-600">Add Player</p>

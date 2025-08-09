@@ -42,6 +42,7 @@ export function AddCardModal({
               }
               className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Card name"
+              data-testid="card-name-input"
             />
           </div>
           <div>
@@ -60,6 +61,7 @@ export function AddCardModal({
               className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="Card description"
               rows={3}
+              data-testid="card-text-input"
             />
           </div>
           <div>
@@ -82,6 +84,7 @@ export function AddCardModal({
               className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
               placeholder="0"
               min="0"
+              data-testid="card-cost-input"
             />
           </div>
         </div>
@@ -90,6 +93,7 @@ export function AddCardModal({
             onClick={onAddCard}
             disabled={!cardForm.name.trim() || !cardForm.text.trim()}
             className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+            data-testid="add-card-btn"
           >
             Add Card
           </button>
