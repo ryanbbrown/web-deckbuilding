@@ -36,6 +36,7 @@ export function PlayerCard({
       className="border border-gray-300 bg-white rounded-lg p-6"
       onDragOver={onDragOver}
       onDrop={(e) => onDrop(e, player.playerId, Zone.DISCARD)}
+      data-testid={`player-section-${player.name.toLowerCase()}`}
     >
       <h3 className="text-lg font-semibold text-gray-900 mb-4">
         {player.name}
@@ -89,24 +90,28 @@ export function PlayerCard({
         <button
           onClick={() => onDrawCard(player.playerId)}
           className="bg-blue-500 text-white px-3 py-1 rounded text-sm hover:bg-blue-600 transition-colors"
+          data-testid="draw-card-btn"
         >
           Draw Card
         </button>
         <button
           onClick={() => onDrawHand(player.playerId)}
           className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 transition-colors"
+          data-testid="draw-hand-btn"
         >
           Draw Hand
         </button>
         <button
           onClick={() => onDiscardAll(player.playerId)}
           className="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600 transition-colors"
+          data-testid="discard-all-btn"
         >
           Discard All
         </button>
         <button
           onClick={() => setShowDeckComposition(!showDeckComposition)}
           className="bg-purple-500 text-white px-3 py-1 rounded text-sm hover:bg-purple-600 transition-colors"
+          data-testid="show-deck-comp-btn"
         >
           {showDeckComposition ? 'Hide Deck Comp' : 'Show Deck Comp'}
         </button>

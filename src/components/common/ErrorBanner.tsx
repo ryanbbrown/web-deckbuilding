@@ -7,7 +7,10 @@ interface ErrorBannerProps {
 
 export function ErrorBanner({ message, onClose }: ErrorBannerProps) {
   return (
-    <div className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+    <div
+      className="mb-6 bg-red-50 border border-red-200 rounded-lg p-4"
+      data-testid="error-message"
+    >
       <div className="flex items-center justify-between">
         <div className="flex items-center">
           <div className="text-red-600 mr-3">⚠️</div>

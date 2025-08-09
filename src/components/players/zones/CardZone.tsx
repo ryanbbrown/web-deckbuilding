@@ -156,6 +156,7 @@ export function CardZone({
   return (
     <div
       className={`border border-gray-200 bg-gray-50 rounded p-3 ${config.gridSpan || ''} ${className || ''}`}
+      data-testid={`${zone.toLowerCase()}-section`}
     >
       <div className="flex justify-between items-center mb-2">
         <h4 className="text-sm font-medium text-gray-700">
@@ -165,6 +166,7 @@ export function CardZone({
           <button
             onClick={onToggleView}
             className="text-xs text-red-600 hover:text-red-800 hover:underline transition-colors"
+            data-testid="show-all-cards-btn"
           >
             {showAllCards ? 'Show Top Card' : 'Show All Cards'}
           </button>

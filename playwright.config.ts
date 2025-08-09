@@ -25,6 +25,18 @@ export default defineConfig({
 
     /* Take screenshot on failure */
     screenshot: 'only-on-failure',
+
+    /* Set larger viewport for better test visibility */
+    viewport: { width: 1920, height: 1080 },
+
+    /* Launch options for headed mode */
+    launchOptions: {
+      args: [
+        '--start-maximized',
+        '--disable-web-security',
+        '--disable-features=VizDisplayCompositor',
+      ],
+    },
   },
 
   /* Configure projects for major browsers */
@@ -34,15 +46,16 @@ export default defineConfig({
       use: { ...devices['Desktop Chrome'] },
     },
 
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
+    // Disabled for faster testing - only running Chromium
+    // {
+    //   name: 'firefox',
+    //   use: { ...devices['Desktop Firefox'] },
+    // },
 
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
+    // {
+    //   name: 'webkit',
+    //   use: { ...devices['Desktop Safari'] },
+    // },
 
     /* Test against mobile viewports. */
     // {

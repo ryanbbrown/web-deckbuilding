@@ -81,6 +81,7 @@ Gold|Best treasure card|3`;
               className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm"
               placeholder={exampleText}
               rows={8}
+              data-testid="bulk-add-textarea"
             />
             <p className="text-xs text-gray-400 mt-1">
               Tip: Press Ctrl+Enter (or Cmd+Enter) to submit
@@ -100,6 +101,7 @@ Gold|Best treasure card|3`;
             onClick={handleSubmit}
             disabled={!bulkInput.trim()}
             className="flex-1 bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+            data-testid="bulk-add-cards-btn"
           >
             Add Cards
           </button>
