@@ -19,6 +19,9 @@ export default [
         sourceType: 'module',
         project: './tsconfig.eslint.json',
       },
+      globals: {
+        ...globals.browser,
+      },
     },
     plugins: {
       '@typescript-eslint': ts,
@@ -72,6 +75,15 @@ export default [
     languageOptions: {
       globals: {
         ...globals.jest,
+      },
+    },
+  },
+
+  {
+    files: ['playwright.config.ts', 'vite.config.mjs', 'vitest.config.ts'],
+    languageOptions: {
+      globals: {
+        ...globals.node,
       },
     },
   },

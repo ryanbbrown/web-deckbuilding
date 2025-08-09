@@ -69,6 +69,7 @@ export function GameHeader({ game, playersCount }: GameHeaderProps) {
             text="Reset Game"
             onClick={() => setShowConfirmModal(true)}
             className="inline-flex items-center justify-center rounded-md text-sm font-normal ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-red-500 text-white hover:bg-red-600 border border-red-500 hover:border-red-600 h-10 px-4 py-2"
+            data-testid="reset-game-btn"
           />
         )}
       </div>
@@ -92,6 +93,7 @@ export function GameHeader({ game, playersCount }: GameHeaderProps) {
                 text="Reset Game"
                 onClick={handleResetGame}
                 className="inline-flex items-center justify-center rounded-md text-sm font-normal ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-red-500 text-white hover:bg-red-600 border border-red-500 hover:border-red-600 h-10 px-4 py-2"
+                data-testid="confirm-reset-game-btn"
               />
             </div>
           </div>

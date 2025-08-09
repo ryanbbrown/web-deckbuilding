@@ -30,7 +30,10 @@ export function MarketSection({
       {/* Market Container */}
       <div className="mb-8">
         <h2 className="text-xl font-semibold text-gray-800 mb-4">Market</h2>
-        <div className="border border-gray-300 bg-white rounded-lg p-4 min-h-32">
+        <div
+          className="border border-gray-300 bg-white rounded-lg p-4 min-h-32"
+          data-testid="market-section"
+        >
           {marketCards.length === 0 ? (
             <div className="flex items-center min-h-24">
               <p className="text-gray-500 italic">
@@ -47,6 +50,7 @@ export function MarketSection({
                       ? 'border-blue-400 cursor-pointer hover:bg-blue-50 shadow-md'
                       : 'border-gray-300 shadow-sm hover:shadow-md cursor-grab active:cursor-grabbing'
                   }`}
+                  data-testid={`market-card-${card.name.toLowerCase()}`}
                   onClick={() =>
                     isSelectingDeckComposition &&
                     updateDeckQuantity(card.uid, true)
@@ -98,6 +102,7 @@ export function MarketSection({
             onClick={onShowAddCardModal}
             className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors"
             disabled={isSelectingDeckComposition}
+            data-testid="add-card-to-market-btn"
           >
             Add Card to Market
           </button>
@@ -105,6 +110,7 @@ export function MarketSection({
             onClick={onShowBulkAddCardModal}
             className="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors"
             disabled={isSelectingDeckComposition}
+            data-testid="add-multiple-cards-to-market-btn"
           >
             Add Multiple Cards to Market
           </button>
@@ -112,6 +118,7 @@ export function MarketSection({
             onClick={onStartDeckComposition}
             className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors"
             disabled={isSelectingDeckComposition}
+            data-testid="set-starting-deck-composition-btn"
           >
             {game?.startingDeckComposition &&
             Object.keys(game.startingDeckComposition).length > 0
