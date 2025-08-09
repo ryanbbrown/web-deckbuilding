@@ -21,6 +21,9 @@ A frontend-only single-page application for simulating deckbuilding experiences,
 | `pnpm dev` | Start development server |
 | `pnpm build` | TypeScript compile + Vite build |
 | `pnpm test` | Run vitest tests |
+| `pnpm test:e2e` | Run Playwright E2E tests |
+| `pnpm test:e2e:ui` | Run E2E tests with UI mode |
+| `pnpm test:e2e:debug` | Run E2E tests in debug mode |
 | `pnpm lint` | ESLint check |
 | `pnpm lint:fix` | Auto-fix ESLint issues |
 | `pnpm format` | Format with Prettier |

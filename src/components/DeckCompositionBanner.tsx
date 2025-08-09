@@ -37,6 +37,7 @@ export function DeckCompositionBanner({
           <button
             onClick={onSave}
             className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition-colors"
+            data-testid="save-composition-btn"
           >
             Save Composition
           </button>
@@ -56,6 +57,7 @@ export function DeckCompositionBanner({
               <div
                 key={cardUid}
                 className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm flex items-center gap-2"
+                data-testid={`deck-composition-${cardName.toLowerCase()}`}
               >
                 <span>
                   {cardName}: {quantity}
@@ -63,6 +65,7 @@ export function DeckCompositionBanner({
                 <button
                   onClick={() => updateDeckQuantity(cardUid, false)}
                   className="w-5 h-5 bg-red-500 text-white rounded-full text-xs hover:bg-red-600 flex items-center justify-center"
+                  data-testid={`deck-composition-minus-${cardName.toLowerCase()}`}
                 >
                   -
                 </button>
