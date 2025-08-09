@@ -9,14 +9,16 @@ module.exports = {
           // 1) tag commits that look like a PR/merge commit (e.g., "... (#11)")
           transform(commit) {
             if (commit.header && /\(#\d+\)/.test(commit.header)) {
-              commit.isPrTitle = true;
+              return { ...commit, isPrTitle: true };
             }
             return commit;
           },
           // 2) lift the first PR-title we find into the global context
-          finalizeContext(context, commits) {
-            const pr = commits.find(c => c.isPrTitle);
-            if (pr) context.prTitle = pr.header || pr.subject;
+          finalizeContext(context, options, commits) {
+            if (Array.isArray(commits)) {
+              const pr = commits.find(c => c.isPrTitle);
+              if (pr) context.prTitle = pr.header || pr.subject;
+            }
             return context;
           },
           // 3) print PR title right under the version header, then continue as normal
@@ -46,13 +48,14 @@ module.exports = {
           message: "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
         }
       ],
-      [
-        "@semantic-release/github",
-        {
-          successComment: false,
-          failComment: false,
-          releasedLabels: false
-        }
-      ]
+      // Temporarily disabled for testing
+      // [
+      //   "@semantic-release/github",
+      //   {
+      //     successComment: false,
+      //     failComment: false,
+      //     releasedLabels: false
+      //   }
+      // ]
     ]
   };
