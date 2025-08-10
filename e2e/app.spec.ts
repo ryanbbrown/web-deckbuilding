@@ -224,6 +224,17 @@ Gold|Best treasure card|3`;
     // Assert that four cards show in the discard section
     await expect(discardSection.locator('h4')).toContainText('(3)');
 
+    // Test trashing a card from discard pile
+    const discardCardToTrash = page
+      .getByTestId('discard-section')
+      .locator('[data-card-clickable="true"]')
+      .first();
+    await discardCardToTrash.click();
+    await page.getByTestId('trash-card-btn').click();
+
+    // Assert that only two cards remain in the discard section after trashing one
+    await expect(discardSection.locator('h4')).toContainText('(2)');
+
     // Click the "Draw Card" button three times
     await page.getByTestId('draw-card-btn').click();
     await page.getByTestId('draw-card-btn').click();

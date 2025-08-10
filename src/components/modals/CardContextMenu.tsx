@@ -57,7 +57,8 @@ export function CardContextMenu({
         </button>
       )}
       {(selectedCard.currentZone === Zone.HAND ||
-        selectedCard.currentZone === Zone.PLAYED) && (
+        selectedCard.currentZone === Zone.PLAYED ||
+        selectedCard.currentZone === Zone.DISCARD) && (
         <button
           onClick={onTrashCard}
           className="block w-full text-left text-sm text-red-700 hover:bg-red-50 p-2 rounded-md mb-1"
