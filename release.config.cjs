@@ -24,16 +24,16 @@ module.exports = {
         writerOpts: {
           // 1) tag commits that look like a PR/merge commit (e.g., "... (#11)")
           transform(commit) {
+            const transformedCommit = {
+              ...commit,
+              hash: commit.hash ? commit.hash.slice(0, 7) : commit.hash
+            };
+            
             if (commit.header && /\(#\d+\)/.test(commit.header)) {
-              commit.isPrTitle = true;
+              transformedCommit.isPrTitle = true;
             }
             
-            // Replace full hash with short hash for display
-            if (commit.hash) {
-              commit.hash = commit.hash.slice(0, 7);
-            }
-            
-            return commit;
+            return transformedCommit;
           },
           // 2) lift the first PR-title we find into the global context
           finalizeContext(context, options, commits) {
