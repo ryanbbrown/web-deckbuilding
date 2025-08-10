@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## 0.10.0 (2025-08-10)
+
+fix: added pnpm install to release job (#13)
+
+
+* fix: added pnpm install to release job ([002d99c3173fcf575d3dea6fcf9bdffffcaa05e6](https://github.com/ryanbbrown/web-deckbuilding/commit/002d99c3173fcf575d3dea6fcf9bdffffcaa05e6))
+* fix: added pnpm install to release job (#13) ([60d0ed4534988a3e8141284f2bdbef6ef2f38768](https://github.com/ryanbbrown/web-deckbuilding/commit/60d0ed4534988a3e8141284f2bdbef6ef2f38768)), closes [#13](https://github.com/ryanbbrown/web-deckbuilding/issues/13)
+* fix: simplify semantic-release commit message ([33d5fed820df6d401313053f84cb4318869c8b8c](https://github.com/ryanbbrown/web-deckbuilding/commit/33d5fed820df6d401313053f84cb4318869c8b8c))
+* fix: use PAT token for semantic-release to bypass branch protection ([62d7171ed24f06c9557aaaf6df52db7ae3fc4dec](https://github.com/ryanbbrown/web-deckbuilding/commit/62d7171ed24f06c9557aaaf6df52db7ae3fc4dec))
+* feat: add semantic-release and changelog (#12) ([466d1befaf4bb452efc92eaffb1cd191a6e1b88c](https://github.com/ryanbbrown/web-deckbuilding/commit/466d1befaf4bb452efc92eaffb1cd191a6e1b88c)), closes [#12](https://github.com/ryanbbrown/web-deckbuilding/issues/12)
+* feat: add semantic-release GitHub Actions workflow ([2c6ad3483e7d4b7fa112d2ea29e330b6c60f523e](https://github.com/ryanbbrown/web-deckbuilding/commit/2c6ad3483e7d4b7fa112d2ea29e330b6c60f523e))
+* feat: setup semantic-release with automatic PR title extraction ([9d7b7bbd554c77d61971a59b2672a77e3609db36](https://github.com/ryanbbrown/web-deckbuilding/commit/9d7b7bbd554c77d61971a59b2672a77e3609db36))
+* chore: enable GitHub plugin in semantic-release config ([ce3bd38234d6f5cd6a9396edc05e2d7c3eff9990](https://github.com/ryanbbrown/web-deckbuilding/commit/ce3bd38234d6f5cd6a9396edc05e2d7c3eff9990))
+* chore: revert hash customization in release config ([17cd3f2e86d107304975ec015c41d15cffa8b436](https://github.com/ryanbbrown/web-deckbuilding/commit/17cd3f2e86d107304975ec015c41d15cffa8b436))
+
 ## [0.9.0](https://github.com/ryanbbrown/web-deckbuilding/compare/v0.8.1...v0.9.0) (2025-01-27)
 
 ### Initial e2e testing setup with Playwright ([#11](https://github.com/ryanbbrown/web-deckbuilding/pull/11))
