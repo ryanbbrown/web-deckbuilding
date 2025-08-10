@@ -294,6 +294,51 @@ Gold|Best treasure card|3`;
     const platinumInDiscard = discardZone.getByText('Platinum');
     await expect(platinumInDiscard).toBeVisible({ timeout: 5000 });
 
+    // ## Coin Management Tests
+    // ### Verify Initial Coin State
+    // Assert that player1 starts with 0 coins
+    await expect(page.getByTestId('coins-player1')).toContainText('0 coins');
+
+    // ### Test Coin Increment
+    // Click the increment button (+) 3 times
+    const incrementBtn = page.getByTestId('increment-coins-player1');
+    await incrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('1 coins');
+
+    await incrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('2 coins');
+
+    await incrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('3 coins');
+
+    // ### Test Coin Decrement
+    // Click the decrement button (-) 2 times
+    const decrementBtn = page.getByTestId('decrement-coins-player1');
+    await decrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('2 coins');
+
+    await decrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('1 coins');
+
+    // ### Test Negative Coins
+    // Click the decrement button (-) 3 more times to go negative
+    await decrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('0 coins');
+
+    await decrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('-1 coins');
+
+    await decrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('-2 coins');
+
+    // ### Test Recovery from Negative
+    // Click increment button (+) 2 times to return to 0
+    await incrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('-1 coins');
+
+    await incrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('0 coins');
+
     // ## Finish
     // Click the "Reset Game" button (top right corner)
     await page.getByTestId('reset-game-btn').click();

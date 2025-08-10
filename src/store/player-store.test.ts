@@ -488,5 +488,161 @@ describe('Player Store', () => {
         expect(unchangedPlayer.allCards).toHaveLength(1);
       });
     });
+
+    describe('Coin Management', () => {
+      describe('incrementPlayerCoins', () => {
+        it('should increment player coins by 1 by default', () => {
+          const player = createPlayer('Test Player');
+          const { addPlayer, incrementPlayerCoins, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          incrementPlayerCoins(player.playerId);
+
+          const updatedPlayer = getPlayer(player.playerId)!;
+          expect(updatedPlayer.coins).toBe(1);
+        });
+
+        it('should increment player coins by specified amount', () => {
+          const player = createPlayer('Test Player');
+          const { addPlayer, incrementPlayerCoins, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          incrementPlayerCoins(player.playerId, 5);
+
+          const updatedPlayer = getPlayer(player.playerId)!;
+          expect(updatedPlayer.coins).toBe(5);
+        });
+
+        it('should handle incrementing from existing coin amount', () => {
+          const player = createPlayer('Test Player');
+          const { addPlayer, updatePlayer, incrementPlayerCoins, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          updatePlayer(player.playerId, { coins: 10 });
+          incrementPlayerCoins(player.playerId, 3);
+
+          const updatedPlayer = getPlayer(player.playerId)!;
+          expect(updatedPlayer.coins).toBe(13);
+        });
+
+        it('should handle non-existent player gracefully', () => {
+          const { incrementPlayerCoins, getAllPlayers } =
+            usePlayerStore.getState();
+
+          incrementPlayerCoins('non-existent', 5);
+
+          expect(getAllPlayers()).toHaveLength(0);
+        });
+
+        it('should preserve all other player properties', () => {
+          const player = createPlayer('Test Player');
+          const cardDef = createCardDefinition('Test Card', 'Test text');
+          const cardInstance = createCardInstance(cardDef);
+          const { addPlayer, registerCard, incrementPlayerCoins, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          registerCard(player.playerId, cardInstance, Zone.HAND);
+          incrementPlayerCoins(player.playerId, 3);
+
+          const updatedPlayer = getPlayer(player.playerId)!;
+          expect(updatedPlayer.name).toBe(player.name);
+          expect(updatedPlayer.playerId).toBe(player.playerId);
+          expect(updatedPlayer.hand).toHaveLength(1);
+          expect(updatedPlayer.allCards).toHaveLength(1);
+          expect(updatedPlayer.coins).toBe(3);
+        });
+      });
+
+      describe('decrementPlayerCoins', () => {
+        it('should decrement player coins by 1 by default', () => {
+          const player = createPlayer('Test Player');
+          const { addPlayer, updatePlayer, decrementPlayerCoins, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          updatePlayer(player.playerId, { coins: 5 });
+          decrementPlayerCoins(player.playerId);
+
+          const updatedPlayer = getPlayer(player.playerId)!;
+          expect(updatedPlayer.coins).toBe(4);
+        });
+
+        it('should decrement player coins by specified amount', () => {
+          const player = createPlayer('Test Player');
+          const { addPlayer, updatePlayer, decrementPlayerCoins, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          updatePlayer(player.playerId, { coins: 10 });
+          decrementPlayerCoins(player.playerId, 3);
+
+          const updatedPlayer = getPlayer(player.playerId)!;
+          expect(updatedPlayer.coins).toBe(7);
+        });
+
+        it('should allow coins to go negative', () => {
+          const player = createPlayer('Test Player');
+          const { addPlayer, updatePlayer, decrementPlayerCoins, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          updatePlayer(player.playerId, { coins: 2 });
+          decrementPlayerCoins(player.playerId, 5);
+
+          const updatedPlayer = getPlayer(player.playerId)!;
+          expect(updatedPlayer.coins).toBe(-3);
+        });
+
+        it('should decrement from zero to negative', () => {
+          const player = createPlayer('Test Player');
+          const { addPlayer, decrementPlayerCoins, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          decrementPlayerCoins(player.playerId, 2);
+
+          const updatedPlayer = getPlayer(player.playerId)!;
+          expect(updatedPlayer.coins).toBe(-2);
+        });
+
+        it('should handle non-existent player gracefully', () => {
+          const { decrementPlayerCoins, getAllPlayers } =
+            usePlayerStore.getState();
+
+          decrementPlayerCoins('non-existent', 5);
+
+          expect(getAllPlayers()).toHaveLength(0);
+        });
+
+        it('should preserve all other player properties', () => {
+          const player = createPlayer('Test Player');
+          const cardDef = createCardDefinition('Test Card', 'Test text');
+          const cardInstance = createCardInstance(cardDef);
+          const {
+            addPlayer,
+            registerCard,
+            updatePlayer,
+            decrementPlayerCoins,
+            getPlayer,
+          } = usePlayerStore.getState();
+
+          addPlayer(player);
+          registerCard(player.playerId, cardInstance, Zone.HAND);
+          updatePlayer(player.playerId, { coins: 10 });
+          decrementPlayerCoins(player.playerId, 3);
+
+          const updatedPlayer = getPlayer(player.playerId)!;
+          expect(updatedPlayer.name).toBe(player.name);
+          expect(updatedPlayer.playerId).toBe(player.playerId);
+          expect(updatedPlayer.hand).toHaveLength(1);
+          expect(updatedPlayer.allCards).toHaveLength(1);
+          expect(updatedPlayer.coins).toBe(7);
+        });
+      });
+    });
   });
 });

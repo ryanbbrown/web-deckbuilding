@@ -4,6 +4,7 @@ import { Zone, CardInstance } from '@/features/cards/types';
 import { CardZone } from './zones/CardZone';
 import { CardActionHandlers } from '@/types/ui';
 import { DeckComposition } from './DeckComposition';
+import usePlayerStore from '@/store/player-store';
 
 interface PlayerCardProps {
   player: Player;
@@ -31,6 +32,7 @@ export function PlayerCard({
 }: PlayerCardProps) {
   const [showDeckComposition, setShowDeckComposition] = useState(false);
   const [showAllDiscardCards, setShowAllDiscardCards] = useState(false);
+  const { incrementPlayerCoins, decrementPlayerCoins } = usePlayerStore();
   return (
     <div
       className="border border-gray-300 bg-white rounded-lg p-6"
@@ -38,9 +40,33 @@ export function PlayerCard({
       onDrop={(e) => onDrop(e, player.playerId, Zone.DISCARD)}
       data-testid={`player-section-${player.name.toLowerCase()}`}
     >
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        {player.name}
-      </h3>
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-lg font-semibold text-gray-900">{player.name}</h3>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => decrementPlayerCoins(player.playerId)}
+            className="w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-red-600 transition-colors"
+            data-testid={`decrement-coins-${player.name.toLowerCase()}`}
+            aria-label="Decrease coins"
+          >
+            −
+          </button>
+          <span
+            className="text-lg font-semibold text-gray-900 min-w-[4ch] text-center"
+            data-testid={`coins-${player.name.toLowerCase()}`}
+          >
+            {player.coins ?? 0} coins
+          </span>
+          <button
+            onClick={() => incrementPlayerCoins(player.playerId)}
+            className="w-6 h-6 bg-green-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-green-600 transition-colors"
+            data-testid={`increment-coins-${player.name.toLowerCase()}`}
+            aria-label="Increase coins"
+          >
+            +
+          </button>
+        </div>
+      </div>
 
       <div className="grid grid-cols-2 gap-4">
         {/* Deck */}
