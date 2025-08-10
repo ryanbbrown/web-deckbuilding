@@ -1,5 +1,5 @@
 # Web Deckbuilding SPA (React 19 + Vite)
-A frontend-only single-page application for simulating deckbuilding experiences, built with React, TypeScript, and Vite.
+A frontend-only single-page application for simulating deckbuilding experiences, built with React, TypeScript, Zustand, and Vite.
 
 
 ## General Guidelines
@@ -12,7 +12,7 @@ A frontend-only single-page application for simulating deckbuilding experiences,
 
 ### How Claude should work
 1. Plan before edit, cite affected files.
-2. Always run `pnpm test` and `pnpm typecheck`.
+2. Always run `pnpm test`, `pnpm test:e2e`, and `pnpm typecheck`.
 3. Respect `AIDEV-*` anchors (see below).
 
 ### Project commands
@@ -56,7 +56,7 @@ This applies to every feature directory inside src/features/ unless otherwise no
 
 ### State Management
 - **Zustand stores** in `src/store/` for global state
-- Store actions follow set/get patterns (see auth-store.ts:13)
+- Store actions follow set/get patterns (see player-store.ts or game-store.ts for examples)
 - Use React Query for server state and caching
 - Local component state with useState for UI-only state
 
