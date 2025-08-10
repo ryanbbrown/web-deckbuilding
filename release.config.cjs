@@ -7,14 +7,32 @@ module.exports = {
         preset: "conventionalcommits",
         presetConfig: {
           commitUrlFormat: '{{host}}/{{owner}}/{{repository}}/commit/{{hash}}',
-          compareUrlFormat: '{{host}}/{{owner}}/{{repository}}/compare/{{previousTag}}...{{currentTag}}'
+          compareUrlFormat: '{{host}}/{{owner}}/{{repository}}/compare/{{previousTag}}...{{currentTag}}',
+          types: [
+            { type: 'feat', section: 'Features' },
+            { type: 'fix', section: 'Bug Fixes' },
+            { type: 'chore', section: 'Chores' },
+            { type: 'docs', section: 'Documentation' },
+            { type: 'style', section: 'Styles' },
+            { type: 'refactor', section: 'Code Refactoring' },
+            { type: 'perf', section: 'Performance Improvements' },
+            { type: 'test', section: 'Tests' },
+            { type: 'build', section: 'Build System' },
+            { type: 'ci', section: 'Continuous Integration' }
+          ]
         },
         writerOpts: {
           // 1) tag commits that look like a PR/merge commit (e.g., "... (#11)")
           transform(commit) {
             if (commit.header && /\(#\d+\)/.test(commit.header)) {
-              return { ...commit, isPrTitle: true };
+              commit.isPrTitle = true;
             }
+            
+            // Replace full hash with short hash for display
+            if (commit.hash) {
+              commit.hash = commit.hash.slice(0, 7);
+            }
+            
             return commit;
           },
           // 2) lift the first PR-title we find into the global context
@@ -28,19 +46,8 @@ module.exports = {
           // 3) print PR title right under the version header, then continue as normal
           headerPartial:
             "## [{{#if version}}{{version}}{{else}}{{currentTag}}{{/if}}]({{compareUrl}}){{#if date}} ({{date}}){{/if}}\n\n" +
-            "{{#if prTitle}}{{prTitle}}\n\n{{/if}}",
+            "{{#if prTitle}}{{prTitle}}\n\n{{/if}}"
           // (we keep the default mainTemplate & commit grouping so Features/Fixes render normally)
-
-          // add a 7-char hash for display
-          transform: (commit) => ({
-            ...commit,
-            shortHash: commit.hash ? commit.hash.slice(0, 7) : commit.hash,
-          }),
-          commitPartial:
-            '* {{#if scope}}**{{scope}}:** {{/if}}{{subject}} ' +
-            '([{{shortHash}}]({{@root.repoUrl}}/{{@root.commit}}/{{hash}}))' +
-            '{{#if references}}, closes {{#each references}}' +
-            '[{{this.issue}}]({{@root.repoUrl}}/{{@root.issue}}/{{this.issue}}) {{/each}}{{/if}}\n'
         }
       }],
       [
