@@ -5,6 +5,10 @@ module.exports = {
       ["@semantic-release/commit-analyzer", { preset: "conventionalcommits" }],
       ["@semantic-release/release-notes-generator", {
         preset: "conventionalcommits",
+        presetConfig: {
+          commitUrlFormat: '{{host}}/{{owner}}/{{repository}}/commit/{{hash}}',
+          compareUrlFormat: '{{host}}/{{owner}}/{{repository}}/compare/{{previousTag}}...{{currentTag}}'
+        },
         writerOpts: {
           // 1) tag commits that look like a PR/merge commit (e.g., "... (#11)")
           transform(commit) {
@@ -23,9 +27,20 @@ module.exports = {
           },
           // 3) print PR title right under the version header, then continue as normal
           headerPartial:
-            "## {{#if version}}{{version}}{{else}}{{currentTag}}{{/if}}{{#if date}} ({{date}}){{/if}}\n\n" +
-            "{{#if prTitle}}{{prTitle}}\n\n{{/if}}"
+            "## [{{#if version}}{{version}}{{else}}{{currentTag}}{{/if}}]({{compareUrl}}){{#if date}} ({{date}}){{/if}}\n\n" +
+            "{{#if prTitle}}{{prTitle}}\n\n{{/if}}",
           // (we keep the default mainTemplate & commit grouping so Features/Fixes render normally)
+
+          // add a 7-char hash for display
+          transform: (commit) => ({
+            ...commit,
+            shortHash: commit.hash ? commit.hash.slice(0, 7) : commit.hash,
+          }),
+          commitPartial:
+            '* {{#if scope}}**{{scope}}:** {{/if}}{{subject}} ' +
+            '([{{shortHash}}]({{@root.repoUrl}}/{{@root.commit}}/{{hash}}))' +
+            '{{#if references}}, closes {{#each references}}' +
+            '[{{this.issue}}]({{@root.repoUrl}}/{{@root.issue}}/{{this.issue}}) {{/each}}{{/if}}\n'
         }
       }],
       [
