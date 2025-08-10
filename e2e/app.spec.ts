@@ -224,6 +224,17 @@ Gold|Best treasure card|3`;
     // Assert that four cards show in the discard section
     await expect(discardSection.locator('h4')).toContainText('(3)');
 
+    // Test trashing a card from discard pile
+    const discardCardToTrash = page
+      .getByTestId('discard-section')
+      .locator('[data-card-clickable="true"]')
+      .first();
+    await discardCardToTrash.click();
+    await page.getByTestId('trash-card-btn').click();
+
+    // Assert that only two cards remain in the discard section after trashing one
+    await expect(discardSection.locator('h4')).toContainText('(2)');
+
     // Click the "Draw Card" button three times
     await page.getByTestId('draw-card-btn').click();
     await page.getByTestId('draw-card-btn').click();
@@ -282,6 +293,91 @@ Gold|Best treasure card|3`;
       .getByTestId('discard-section');
     const platinumInDiscard = discardZone.getByText('Platinum');
     await expect(platinumInDiscard).toBeVisible({ timeout: 5000 });
+
+    // ## Coin Management Tests
+    // ### Verify Initial Coin State
+    // Assert that player1 starts with 0 coins
+    await expect(page.getByTestId('coins-player1')).toContainText('0 coins');
+
+    // ### Test Coin Increment
+    // Click the increment button (+) 3 times
+    const incrementBtn = page.getByTestId('increment-coins-player1');
+    await incrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('1 coins');
+
+    await incrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('2 coins');
+
+    await incrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('3 coins');
+
+    // ### Test Coin Decrement
+    // Click the decrement button (-) 2 times
+    const decrementBtn = page.getByTestId('decrement-coins-player1');
+    await decrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('2 coins');
+
+    await decrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('1 coins');
+
+    // ### Test Negative Coins
+    // Click the decrement button (-) 3 more times to go negative
+    await decrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('0 coins');
+
+    await decrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('-1 coins');
+
+    await decrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('-2 coins');
+
+    // ### Test Recovery from Negative
+    // Click increment button (+) 2 times to return to 0
+    await incrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('-1 coins');
+
+    await incrementBtn.click();
+    await expect(page.getByTestId('coins-player1')).toContainText('0 coins');
+
+    // ## Turn Management Tests
+    // ### Verify Current Turn State (should be Turn 3 after previous draw hand calls)
+    // Player should be on Turn 3 because:
+    // - Started at Turn 1
+    // - First "Draw Hand" (line 119) → Turn 2
+    // - Second "Draw Hand" (line 244) → Turn 3
+    await expect(page.getByTestId('player-section-player1')).toContainText(
+      'Turn 3'
+    );
+
+    // ### Test Manual Turn Increment
+    // Click the increment turn button (+) 2 times
+    const incrementTurnBtn = page.getByTestId('increment-turns-player1');
+    await incrementTurnBtn.click();
+    await expect(page.getByTestId('player-section-player1')).toContainText(
+      'Turn 4'
+    );
+
+    await incrementTurnBtn.click();
+    await expect(page.getByTestId('player-section-player1')).toContainText(
+      'Turn 5'
+    );
+
+    // ### Test Auto-Increment on Draw Hand
+    // Click the "draw hand" button to test auto-increment
+    await page.getByTestId('draw-hand-btn').click();
+
+    // Assert that turn auto-incremented to Turn 6
+    await expect(page.getByTestId('player-section-player1')).toContainText(
+      'Turn 6'
+    );
+
+    // Click "draw hand" again to verify sequential increment
+    await page.getByTestId('draw-hand-btn').click();
+
+    // Assert that turn auto-incremented to Turn 7
+    await expect(page.getByTestId('player-section-player1')).toContainText(
+      'Turn 7'
+    );
 
     // ## Finish
     // Click the "Reset Game" button (top right corner)
