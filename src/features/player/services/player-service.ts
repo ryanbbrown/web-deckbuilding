@@ -6,6 +6,7 @@ export function createPlayer(name: string): Player {
   return {
     name,
     playerId: crypto.randomUUID(),
+    coins: 0,
     allCards: [],
     deck: [],
     hand: [],
@@ -300,4 +301,18 @@ export function registerCardToPlayer(
     default:
       return updatedPlayer;
   }
+}
+
+export function incrementCoins(player: Player, amount: number = 1): Player {
+  return {
+    ...player,
+    coins: player.coins + amount,
+  };
+}
+
+export function decrementCoins(player: Player, amount: number = 1): Player {
+  return {
+    ...player,
+    coins: player.coins - amount,
+  };
 }

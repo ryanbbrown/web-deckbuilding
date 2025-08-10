@@ -14,6 +14,8 @@ import {
   trashCard,
   moveCardBetweenZones,
   registerCardToPlayer,
+  incrementCoins,
+  decrementCoins,
 } from '../services';
 
 describe('Player Service', () => {
@@ -24,6 +26,7 @@ describe('Player Service', () => {
       expect(player.name).toBe('Test Player');
       expect(player.playerId).toBeDefined();
       expect(typeof player.playerId).toBe('string');
+      expect(player.coins).toBe(0);
       expect(player.allCards).toEqual([]);
       expect(player.deck).toEqual([]);
       expect(player.hand).toEqual([]);
@@ -652,6 +655,131 @@ describe('Player Service', () => {
       expect(player.allCards).toHaveLength(2);
       expect(player.hand[0].definition.name).toBe('Card 1');
       expect(player.hand[1].definition.name).toBe('Card 2');
+    });
+  });
+
+  describe('Coin Management', () => {
+    describe('incrementCoins', () => {
+      it('should increment coins by 1 by default', () => {
+        const player = createPlayer('Test Player');
+
+        const updatedPlayer = incrementCoins(player);
+
+        expect(updatedPlayer.coins).toBe(1);
+        expect(player.coins).toBe(0); // original should be unchanged
+      });
+
+      it('should increment coins by specified amount', () => {
+        const player = createPlayer('Test Player');
+
+        const updatedPlayer = incrementCoins(player, 5);
+
+        expect(updatedPlayer.coins).toBe(5);
+      });
+
+      it('should handle incrementing from a non-zero amount', () => {
+        let player = createPlayer('Test Player');
+        player = { ...player, coins: 10 };
+
+        const updatedPlayer = incrementCoins(player, 3);
+
+        expect(updatedPlayer.coins).toBe(13);
+      });
+
+      it('should handle negative increment amounts', () => {
+        let player = createPlayer('Test Player');
+        player = { ...player, coins: 5 };
+
+        const updatedPlayer = incrementCoins(player, -2);
+
+        expect(updatedPlayer.coins).toBe(3);
+      });
+
+      it('should preserve all other player properties', () => {
+        const player = createPlayer('Test Player');
+        const cardDef = createCardDefinition('Test Card', 'Test text');
+        const cardInstance = createCardInstance(cardDef);
+        const playerWithCard = registerCardToPlayer(
+          player,
+          cardInstance,
+          Zone.HAND
+        );
+
+        const updatedPlayer = incrementCoins(playerWithCard, 2);
+
+        expect(updatedPlayer.name).toBe(playerWithCard.name);
+        expect(updatedPlayer.playerId).toBe(playerWithCard.playerId);
+        expect(updatedPlayer.hand).toEqual(playerWithCard.hand);
+        expect(updatedPlayer.allCards).toEqual(playerWithCard.allCards);
+        expect(updatedPlayer.coins).toBe(2);
+      });
+    });
+
+    describe('decrementCoins', () => {
+      it('should decrement coins by 1 by default', () => {
+        let player = createPlayer('Test Player');
+        player = { ...player, coins: 5 };
+
+        const updatedPlayer = decrementCoins(player);
+
+        expect(updatedPlayer.coins).toBe(4);
+        expect(player.coins).toBe(5); // original should be unchanged
+      });
+
+      it('should decrement coins by specified amount', () => {
+        let player = createPlayer('Test Player');
+        player = { ...player, coins: 10 };
+
+        const updatedPlayer = decrementCoins(player, 3);
+
+        expect(updatedPlayer.coins).toBe(7);
+      });
+
+      it('should allow coins to go negative', () => {
+        let player = createPlayer('Test Player');
+        player = { ...player, coins: 2 };
+
+        const updatedPlayer = decrementCoins(player, 5);
+
+        expect(updatedPlayer.coins).toBe(-3);
+      });
+
+      it('should decrement from zero to negative', () => {
+        const player = createPlayer('Test Player');
+
+        const updatedPlayer = decrementCoins(player, 2);
+
+        expect(updatedPlayer.coins).toBe(-2);
+      });
+
+      it('should handle negative decrement amounts (effectively increment)', () => {
+        let player = createPlayer('Test Player');
+        player = { ...player, coins: 5 };
+
+        const updatedPlayer = decrementCoins(player, -3);
+
+        expect(updatedPlayer.coins).toBe(8);
+      });
+
+      it('should preserve all other player properties', () => {
+        const player = createPlayer('Test Player');
+        const cardDef = createCardDefinition('Test Card', 'Test text');
+        const cardInstance = createCardInstance(cardDef);
+        const playerWithCard = registerCardToPlayer(
+          player,
+          cardInstance,
+          Zone.HAND
+        );
+        const playerWithCoins = { ...playerWithCard, coins: 10 };
+
+        const updatedPlayer = decrementCoins(playerWithCoins, 3);
+
+        expect(updatedPlayer.name).toBe(playerWithCoins.name);
+        expect(updatedPlayer.playerId).toBe(playerWithCoins.playerId);
+        expect(updatedPlayer.hand).toEqual(playerWithCoins.hand);
+        expect(updatedPlayer.allCards).toEqual(playerWithCoins.allCards);
+        expect(updatedPlayer.coins).toBe(7);
+      });
     });
   });
 });
