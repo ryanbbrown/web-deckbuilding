@@ -7,6 +7,7 @@ export function createPlayer(name: string): Player {
     name,
     playerId: crypto.randomUUID(),
     coins: 0,
+    turns: 1,
     allCards: [],
     deck: [],
     hand: [],
@@ -79,6 +80,9 @@ export function drawHand(
       break;
     }
   }
+
+  // Auto-increment turns every time hand is drawn
+  updatedPlayer = incrementTurns(updatedPlayer);
 
   return { player: updatedPlayer, drawnCards };
 }
@@ -314,5 +318,12 @@ export function decrementCoins(player: Player, amount: number = 1): Player {
   return {
     ...player,
     coins: player.coins - amount,
+  };
+}
+
+export function incrementTurns(player: Player): Player {
+  return {
+    ...player,
+    turns: player.turns + 1,
   };
 }

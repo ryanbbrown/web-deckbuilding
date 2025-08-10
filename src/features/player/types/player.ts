@@ -4,6 +4,7 @@ export interface Player {
   name: string;
   playerId: string;
   coins: number;
+  turns: number;
   allCards: CardInstance[];
   deck: CardInstance[];
   hand: CardInstance[];

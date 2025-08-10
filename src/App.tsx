@@ -3,6 +3,7 @@ import useGameStore from '@/store/game-store';
 import useMarketStore from '@/store/market-store';
 import usePlayerStore from '@/store/player-store';
 import { CardDefinition, CardInstance, Zone } from '@/features/cards/types';
+import { createPlayer } from '@/features/player/services';
 import { ErrorBanner } from '@/components/common/ErrorBanner';
 import { Footer } from '@/components/common/Footer';
 import { GameHeader } from '@/components/GameHeader';
@@ -178,15 +179,7 @@ function App() {
     );
     console.log('Available market cards:', marketCards);
 
-    const player = {
-      name: playerName,
-      playerId: `player-${Date.now()}`,
-      allCards: [],
-      deck: [],
-      hand: [],
-      played: [],
-      discard: [],
-    };
+    const player = createPlayer(playerName);
 
     try {
       // Pass all market cards as available card definitions
