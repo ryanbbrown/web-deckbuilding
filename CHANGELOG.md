@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.11.0]() (2025-08-10)
+
+feat: turn and coin counters + file cleanup (#14)
+
+
+* chore: fix immutable object error in semantic-release transform ([b5ff2f2](https://github.com/ryanbbrown/web-deckbuilding/commit/b5ff2f2))
+* chore: old store cleanup ([9330051](https://github.com/ryanbbrown/web-deckbuilding/commit/9330051))
+* chore: removed component tests ([e39f6a6](https://github.com/ryanbbrown/web-deckbuilding/commit/e39f6a6))
+* chore(release): cleaned up changelog, fixed grouping ([831c55f](https://github.com/ryanbbrown/web-deckbuilding/commit/831c55f))
+* chore(release): short hash, tag compare link ([de13e6b](https://github.com/ryanbbrown/web-deckbuilding/commit/de13e6b))
+* feat: coins counter ([ef6368f](https://github.com/ryanbbrown/web-deckbuilding/commit/ef6368f))
+* feat: player turn count ([7629b09](https://github.com/ryanbbrown/web-deckbuilding/commit/7629b09))
+* feat: turn and coin counters + file cleanup (#14) ([dbfde24](https://github.com/ryanbbrown/web-deckbuilding/commit/dbfde24)), closes [#14](https://github.com/ryanbbrown/web-deckbuilding/issues/14)
+* fix: trashing allowed from discard ([23ac464](https://github.com/ryanbbrown/web-deckbuilding/commit/23ac464))
+
 ## [0.10.0](https://github.com/ryanbbrown/web-deckbuilding/compare/v0.9.0...v0.10.0) (2025-08-10)
 
 added pnpm install to release job (#13)
