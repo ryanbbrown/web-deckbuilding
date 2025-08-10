@@ -488,5 +488,263 @@ describe('Player Store', () => {
         expect(unchangedPlayer.allCards).toHaveLength(1);
       });
     });
+
+    describe('Coin Management', () => {
+      describe('incrementPlayerCoins', () => {
+        it('should increment player coins by 1 by default', () => {
+          const player = createPlayer('Test Player');
+          const { addPlayer, incrementPlayerCoins, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          incrementPlayerCoins(player.playerId);
+
+          const updatedPlayer = getPlayer(player.playerId)!;
+          expect(updatedPlayer.coins).toBe(1);
+        });
+
+        it('should increment player coins by specified amount', () => {
+          const player = createPlayer('Test Player');
+          const { addPlayer, incrementPlayerCoins, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          incrementPlayerCoins(player.playerId, 5);
+
+          const updatedPlayer = getPlayer(player.playerId)!;
+          expect(updatedPlayer.coins).toBe(5);
+        });
+
+        it('should handle incrementing from existing coin amount', () => {
+          const player = createPlayer('Test Player');
+          const { addPlayer, updatePlayer, incrementPlayerCoins, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          updatePlayer(player.playerId, { coins: 10 });
+          incrementPlayerCoins(player.playerId, 3);
+
+          const updatedPlayer = getPlayer(player.playerId)!;
+          expect(updatedPlayer.coins).toBe(13);
+        });
+
+        it('should handle non-existent player gracefully', () => {
+          const { incrementPlayerCoins, getAllPlayers } =
+            usePlayerStore.getState();
+
+          incrementPlayerCoins('non-existent', 5);
+
+          expect(getAllPlayers()).toHaveLength(0);
+        });
+
+        it('should preserve all other player properties', () => {
+          const player = createPlayer('Test Player');
+          const cardDef = createCardDefinition('Test Card', 'Test text');
+          const cardInstance = createCardInstance(cardDef);
+          const { addPlayer, registerCard, incrementPlayerCoins, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          registerCard(player.playerId, cardInstance, Zone.HAND);
+          incrementPlayerCoins(player.playerId, 3);
+
+          const updatedPlayer = getPlayer(player.playerId)!;
+          expect(updatedPlayer.name).toBe(player.name);
+          expect(updatedPlayer.playerId).toBe(player.playerId);
+          expect(updatedPlayer.hand).toHaveLength(1);
+          expect(updatedPlayer.allCards).toHaveLength(1);
+          expect(updatedPlayer.coins).toBe(3);
+        });
+      });
+
+      describe('decrementPlayerCoins', () => {
+        it('should decrement player coins by 1 by default', () => {
+          const player = createPlayer('Test Player');
+          const { addPlayer, updatePlayer, decrementPlayerCoins, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          updatePlayer(player.playerId, { coins: 5 });
+          decrementPlayerCoins(player.playerId);
+
+          const updatedPlayer = getPlayer(player.playerId)!;
+          expect(updatedPlayer.coins).toBe(4);
+        });
+
+        it('should decrement player coins by specified amount', () => {
+          const player = createPlayer('Test Player');
+          const { addPlayer, updatePlayer, decrementPlayerCoins, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          updatePlayer(player.playerId, { coins: 10 });
+          decrementPlayerCoins(player.playerId, 3);
+
+          const updatedPlayer = getPlayer(player.playerId)!;
+          expect(updatedPlayer.coins).toBe(7);
+        });
+
+        it('should allow coins to go negative', () => {
+          const player = createPlayer('Test Player');
+          const { addPlayer, updatePlayer, decrementPlayerCoins, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          updatePlayer(player.playerId, { coins: 2 });
+          decrementPlayerCoins(player.playerId, 5);
+
+          const updatedPlayer = getPlayer(player.playerId)!;
+          expect(updatedPlayer.coins).toBe(-3);
+        });
+
+        it('should decrement from zero to negative', () => {
+          const player = createPlayer('Test Player');
+          const { addPlayer, decrementPlayerCoins, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          decrementPlayerCoins(player.playerId, 2);
+
+          const updatedPlayer = getPlayer(player.playerId)!;
+          expect(updatedPlayer.coins).toBe(-2);
+        });
+
+        it('should handle non-existent player gracefully', () => {
+          const { decrementPlayerCoins, getAllPlayers } =
+            usePlayerStore.getState();
+
+          decrementPlayerCoins('non-existent', 5);
+
+          expect(getAllPlayers()).toHaveLength(0);
+        });
+
+        it('should preserve all other player properties', () => {
+          const player = createPlayer('Test Player');
+          const cardDef = createCardDefinition('Test Card', 'Test text');
+          const cardInstance = createCardInstance(cardDef);
+          const {
+            addPlayer,
+            registerCard,
+            updatePlayer,
+            decrementPlayerCoins,
+            getPlayer,
+          } = usePlayerStore.getState();
+
+          addPlayer(player);
+          registerCard(player.playerId, cardInstance, Zone.HAND);
+          updatePlayer(player.playerId, { coins: 10 });
+          decrementPlayerCoins(player.playerId, 3);
+
+          const updatedPlayer = getPlayer(player.playerId)!;
+          expect(updatedPlayer.name).toBe(player.name);
+          expect(updatedPlayer.playerId).toBe(player.playerId);
+          expect(updatedPlayer.hand).toHaveLength(1);
+          expect(updatedPlayer.allCards).toHaveLength(1);
+          expect(updatedPlayer.coins).toBe(7);
+        });
+      });
+    });
+
+    describe('Turn Management', () => {
+      describe('incrementPlayerTurns', () => {
+        it('should increment turns by 1', () => {
+          const player = createPlayer('Test Player');
+          const { addPlayer, incrementPlayerTurns, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          incrementPlayerTurns(player.playerId);
+
+          const updatedPlayer = getPlayer(player.playerId);
+          expect(updatedPlayer?.turns).toBe(2);
+        });
+
+        it('should increment turns multiple times', () => {
+          const player = createPlayer('Test Player');
+          const { addPlayer, incrementPlayerTurns, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          incrementPlayerTurns(player.playerId);
+          incrementPlayerTurns(player.playerId);
+          incrementPlayerTurns(player.playerId);
+
+          const updatedPlayer = getPlayer(player.playerId);
+          expect(updatedPlayer?.turns).toBe(4);
+        });
+
+        it('should handle non-existent player gracefully', () => {
+          const { incrementPlayerTurns } = usePlayerStore.getState();
+
+          // Should not throw an error
+          expect(() => incrementPlayerTurns('nonexistent-id')).not.toThrow();
+        });
+
+        it('should preserve other player properties when incrementing turns', () => {
+          const player = createPlayer('Test Player');
+          const cardDef = createCardDefinition('Test Card', 'Test Text');
+          const cardInstance = createCardInstance(cardDef);
+          const { addPlayer, registerCard, incrementPlayerTurns, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          registerCard(player.playerId, cardInstance, Zone.HAND);
+
+          const beforeUpdate = getPlayer(player.playerId);
+          incrementPlayerTurns(player.playerId);
+          const afterUpdate = getPlayer(player.playerId);
+
+          expect(afterUpdate?.name).toBe(beforeUpdate?.name);
+          expect(afterUpdate?.playerId).toBe(beforeUpdate?.playerId);
+          expect(afterUpdate?.coins).toBe(beforeUpdate?.coins);
+          expect(afterUpdate?.hand).toEqual(beforeUpdate?.hand);
+          expect(afterUpdate?.allCards).toEqual(beforeUpdate?.allCards);
+          expect(afterUpdate?.turns).toBe((beforeUpdate?.turns ?? 1) + 1);
+        });
+      });
+
+      describe('drawPlayerHand with turns auto-increment', () => {
+        it('should auto-increment turns when drawing hand', () => {
+          const player = createPlayer('Test Player');
+          const cardDef = createCardDefinition('Test Card', 'Test Text');
+          const cardInstance = createCardInstance(cardDef);
+          const { addPlayer, registerCard, drawPlayerHand, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          registerCard(player.playerId, cardInstance, Zone.DECK);
+
+          drawPlayerHand(player.playerId, 1);
+
+          const updatedPlayer = getPlayer(player.playerId);
+          expect(updatedPlayer?.turns).toBe(2); // Started at 1, should now be 2
+        });
+
+        it('should increment turns sequentially on multiple hand draws', () => {
+          const player = createPlayer('Test Player');
+          const cardDefs = Array.from({ length: 10 }, (_, i) =>
+            createCardDefinition(`Card ${i}`, `Text ${i}`)
+          );
+          const { addPlayer, registerCard, drawPlayerHand, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+
+          // Add cards to deck
+          for (const cardDef of cardDefs) {
+            const cardInstance = createCardInstance(cardDef);
+            registerCard(player.playerId, cardInstance, Zone.DECK);
+          }
+
+          // Draw hand multiple times
+          drawPlayerHand(player.playerId, 3); // Turn 2
+          drawPlayerHand(player.playerId, 3); // Turn 3
+          drawPlayerHand(player.playerId, 3); // Turn 4
+
+          const updatedPlayer = getPlayer(player.playerId);
+          expect(updatedPlayer?.turns).toBe(4);
+        });
+      });
+    });
   });
 });
