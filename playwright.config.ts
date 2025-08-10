@@ -17,7 +17,7 @@ export default defineConfig({
   reporter: process.env.CI ? 'list' : 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
 
-  //   timeout: 120_000,
+  //timeout: 120_000,
   use: {
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: 'http://localhost:5173',
@@ -33,7 +33,7 @@ export default defineConfig({
 
     /* Launch options for headed mode */
     launchOptions: {
-      //   slowMo: 500,
+      //slowMo: 500,
       args: [
         '--start-maximized',
         '--disable-web-security',

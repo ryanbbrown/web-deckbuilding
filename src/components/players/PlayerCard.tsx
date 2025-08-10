@@ -32,7 +32,8 @@ export function PlayerCard({
 }: PlayerCardProps) {
   const [showDeckComposition, setShowDeckComposition] = useState(false);
   const [showAllDiscardCards, setShowAllDiscardCards] = useState(false);
-  const { incrementPlayerCoins, decrementPlayerCoins } = usePlayerStore();
+  const { incrementPlayerCoins, decrementPlayerCoins, incrementPlayerTurns } =
+    usePlayerStore();
   return (
     <div
       className="border border-gray-300 bg-white rounded-lg p-6"
@@ -41,7 +42,20 @@ export function PlayerCard({
       data-testid={`player-section-${player.name.toLowerCase()}`}
     >
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold text-gray-900">{player.name}</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="text-lg font-semibold text-gray-900">{player.name}</h3>
+          <span className="text-sm text-gray-600 font-medium ml-3">
+            Turn {player.turns ?? 1}
+          </span>
+          <button
+            onClick={() => incrementPlayerTurns(player.playerId)}
+            className="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm hover:bg-blue-600 transition-colors"
+            data-testid={`increment-turns-${player.name.toLowerCase()}`}
+            aria-label="Increment turn"
+          >
+            +
+          </button>
+        </div>
         <div className="flex items-center gap-2">
           <button
             onClick={() => decrementPlayerCoins(player.playerId)}

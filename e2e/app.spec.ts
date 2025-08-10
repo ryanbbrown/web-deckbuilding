@@ -339,6 +339,46 @@ Gold|Best treasure card|3`;
     await incrementBtn.click();
     await expect(page.getByTestId('coins-player1')).toContainText('0 coins');
 
+    // ## Turn Management Tests
+    // ### Verify Current Turn State (should be Turn 3 after previous draw hand calls)
+    // Player should be on Turn 3 because:
+    // - Started at Turn 1
+    // - First "Draw Hand" (line 119) → Turn 2
+    // - Second "Draw Hand" (line 244) → Turn 3
+    await expect(page.getByTestId('player-section-player1')).toContainText(
+      'Turn 3'
+    );
+
+    // ### Test Manual Turn Increment
+    // Click the increment turn button (+) 2 times
+    const incrementTurnBtn = page.getByTestId('increment-turns-player1');
+    await incrementTurnBtn.click();
+    await expect(page.getByTestId('player-section-player1')).toContainText(
+      'Turn 4'
+    );
+
+    await incrementTurnBtn.click();
+    await expect(page.getByTestId('player-section-player1')).toContainText(
+      'Turn 5'
+    );
+
+    // ### Test Auto-Increment on Draw Hand
+    // Click the "draw hand" button to test auto-increment
+    await page.getByTestId('draw-hand-btn').click();
+
+    // Assert that turn auto-incremented to Turn 6
+    await expect(page.getByTestId('player-section-player1')).toContainText(
+      'Turn 6'
+    );
+
+    // Click "draw hand" again to verify sequential increment
+    await page.getByTestId('draw-hand-btn').click();
+
+    // Assert that turn auto-incremented to Turn 7
+    await expect(page.getByTestId('player-section-player1')).toContainText(
+      'Turn 7'
+    );
+
     // ## Finish
     // Click the "Reset Game" button (top right corner)
     await page.getByTestId('reset-game-btn').click();

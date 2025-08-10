@@ -644,5 +644,107 @@ describe('Player Store', () => {
         });
       });
     });
+
+    describe('Turn Management', () => {
+      describe('incrementPlayerTurns', () => {
+        it('should increment turns by 1', () => {
+          const player = createPlayer('Test Player');
+          const { addPlayer, incrementPlayerTurns, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          incrementPlayerTurns(player.playerId);
+
+          const updatedPlayer = getPlayer(player.playerId);
+          expect(updatedPlayer?.turns).toBe(2);
+        });
+
+        it('should increment turns multiple times', () => {
+          const player = createPlayer('Test Player');
+          const { addPlayer, incrementPlayerTurns, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          incrementPlayerTurns(player.playerId);
+          incrementPlayerTurns(player.playerId);
+          incrementPlayerTurns(player.playerId);
+
+          const updatedPlayer = getPlayer(player.playerId);
+          expect(updatedPlayer?.turns).toBe(4);
+        });
+
+        it('should handle non-existent player gracefully', () => {
+          const { incrementPlayerTurns } = usePlayerStore.getState();
+
+          // Should not throw an error
+          expect(() => incrementPlayerTurns('nonexistent-id')).not.toThrow();
+        });
+
+        it('should preserve other player properties when incrementing turns', () => {
+          const player = createPlayer('Test Player');
+          const cardDef = createCardDefinition('Test Card', 'Test Text');
+          const cardInstance = createCardInstance(cardDef);
+          const { addPlayer, registerCard, incrementPlayerTurns, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          registerCard(player.playerId, cardInstance, Zone.HAND);
+
+          const beforeUpdate = getPlayer(player.playerId);
+          incrementPlayerTurns(player.playerId);
+          const afterUpdate = getPlayer(player.playerId);
+
+          expect(afterUpdate?.name).toBe(beforeUpdate?.name);
+          expect(afterUpdate?.playerId).toBe(beforeUpdate?.playerId);
+          expect(afterUpdate?.coins).toBe(beforeUpdate?.coins);
+          expect(afterUpdate?.hand).toEqual(beforeUpdate?.hand);
+          expect(afterUpdate?.allCards).toEqual(beforeUpdate?.allCards);
+          expect(afterUpdate?.turns).toBe((beforeUpdate?.turns ?? 1) + 1);
+        });
+      });
+
+      describe('drawPlayerHand with turns auto-increment', () => {
+        it('should auto-increment turns when drawing hand', () => {
+          const player = createPlayer('Test Player');
+          const cardDef = createCardDefinition('Test Card', 'Test Text');
+          const cardInstance = createCardInstance(cardDef);
+          const { addPlayer, registerCard, drawPlayerHand, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+          registerCard(player.playerId, cardInstance, Zone.DECK);
+
+          drawPlayerHand(player.playerId, 1);
+
+          const updatedPlayer = getPlayer(player.playerId);
+          expect(updatedPlayer?.turns).toBe(2); // Started at 1, should now be 2
+        });
+
+        it('should increment turns sequentially on multiple hand draws', () => {
+          const player = createPlayer('Test Player');
+          const cardDefs = Array.from({ length: 10 }, (_, i) =>
+            createCardDefinition(`Card ${i}`, `Text ${i}`)
+          );
+          const { addPlayer, registerCard, drawPlayerHand, getPlayer } =
+            usePlayerStore.getState();
+
+          addPlayer(player);
+
+          // Add cards to deck
+          for (const cardDef of cardDefs) {
+            const cardInstance = createCardInstance(cardDef);
+            registerCard(player.playerId, cardInstance, Zone.DECK);
+          }
+
+          // Draw hand multiple times
+          drawPlayerHand(player.playerId, 3); // Turn 2
+          drawPlayerHand(player.playerId, 3); // Turn 3
+          drawPlayerHand(player.playerId, 3); // Turn 4
+
+          const updatedPlayer = getPlayer(player.playerId);
+          expect(updatedPlayer?.turns).toBe(4);
+        });
+      });
+    });
   });
 });

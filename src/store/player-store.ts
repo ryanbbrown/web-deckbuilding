@@ -17,6 +17,7 @@ import {
   registerCardToPlayer,
   incrementCoins,
   decrementCoins,
+  incrementTurns,
 } from '../features/player/services/player-service';
 
 interface PlayerState extends Record<string, unknown> {
@@ -70,6 +71,9 @@ interface PlayerState extends Record<string, unknown> {
   // Coin management
   incrementPlayerCoins: (playerId: string, amount?: number) => void;
   decrementPlayerCoins: (playerId: string, amount?: number) => void;
+
+  // Turn management
+  incrementPlayerTurns: (playerId: string) => void;
 }
 
 const usePlayerStore = create<PlayerState>()(
@@ -245,6 +249,17 @@ const usePlayerStore = create<PlayerState>()(
           // Ensure player has coins property (for legacy data)
           const playerWithCoins = { ...player, coins: player.coins ?? 0 };
           const updatedPlayer = decrementCoins(playerWithCoins, amount);
+          get().updatePlayer(playerId, updatedPlayer);
+        },
+
+        // Turn management
+        incrementPlayerTurns: (playerId) => {
+          const player = get().players[playerId];
+          if (!player) return;
+
+          // Ensure player has turns property (for legacy data)
+          const playerWithTurns = { ...player, turns: player.turns ?? 1 };
+          const updatedPlayer = incrementTurns(playerWithTurns);
           get().updatePlayer(playerId, updatedPlayer);
         },
       }),
