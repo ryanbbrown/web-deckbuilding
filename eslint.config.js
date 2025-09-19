@@ -89,7 +89,7 @@ export default [
   },
 
   {
-    ignores: ['node_modules', 'dist', 'dev-dist'],
+    ignores: ['node_modules', 'dist', 'dev-dist', 'y-redis'],
   },
 
   prettier,
