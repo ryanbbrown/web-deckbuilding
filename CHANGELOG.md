@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.12.0]() (2025-09-19)
+
+feat: basic y-redis functionality in subtree (#15)
+
+
+* feat: basic y-redis functionality in subtree ([72bbfff](https://github.com/ryanbbrown/web-deckbuilding/commit/72bbfff))
+* feat: basic y-redis functionality in subtree ([146b91b](https://github.com/ryanbbrown/web-deckbuilding/commit/146b91b))
+* feat: basic y-redis functionality in subtree (#15) ([9491803](https://github.com/ryanbbrown/web-deckbuilding/commit/9491803)), closes [#15](https://github.com/ryanbbrown/web-deckbuilding/issues/15)
+* Merge commit '5fd6c1ba5c67be2724db70079919fb5467fb55b1' as 'y-redis' ([f3ec026](https://github.com/ryanbbrown/web-deckbuilding/commit/f3ec026))
+* Squashed 'y-redis/' content from commit 61a13e4 ([5fd6c1b](https://github.com/ryanbbrown/web-deckbuilding/commit/5fd6c1b))
+
 ## [0.11.0]() (2025-08-10)
 
 feat: turn and coin counters + file cleanup (#14)
