@@ -4,15 +4,15 @@ import useMarketStore from '@/store/market-store';
 import usePlayerStore from '@/store/player-store';
 import { CardDefinition, CardInstance, Zone } from '@/features/cards/types';
 import { createPlayer } from '@/features/player/services';
-import { ErrorBanner } from '@/components/common/ErrorBanner';
-import { Footer } from '@/components/common/Footer';
-import { GameHeader } from '@/components/GameHeader';
-import { DeckCompositionBanner } from '@/components/DeckCompositionBanner';
-import { MarketSection } from '@/components/market/MarketSection';
-import { PlayersSection } from '@/components/players/PlayersSection';
-import { AddCardModal } from '@/components/modals/AddCardModal';
-import { BulkAddCardModal } from '@/components/modals/BulkAddCardModal';
-import { CardContextMenu } from '@/components/modals/CardContextMenu';
+import { ErrorBanner } from '@/common/ErrorBanner';
+import { Footer } from '@/common/Footer';
+import { GameHeader } from '@/features/game/components/GameHeader';
+import { DeckCompositionBanner } from '@/features/game/components/DeckCompositionBanner';
+import { MarketSection } from '@/features/market/components/MarketSection';
+import { PlayersSection } from '@/features/player/components/PlayersSection';
+import { AddCardModal } from '@/features/market/components/AddCardModal';
+import { BulkAddCardModal } from '@/features/market/components/BulkAddCardModal';
+import { CardContextMenu } from '@/features/cards/components/CardContextMenu';
 import './App.css';
 
 function App() {
