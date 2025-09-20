@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Game } from '@/features/game/types';
 import useGameStore from '@/store/game-store';
-import Button from '@/components/ui/button';
+import Button from '@/ui/button';
 
 interface GameHeaderProps {
   game: Game | null;

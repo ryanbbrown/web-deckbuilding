@@ -13,7 +13,6 @@ A frontend-only single-page application for simulating deckbuilding experiences,
 ### How Claude should work
 1. Plan before edit, cite affected files.
 2. Always run `pnpm test`, `pnpm test:e2e`, and `pnpm typecheck`.
-3. Respect `AIDEV-*` anchors (see below).
 
 ### Project commands
 | Command | Description |
@@ -22,16 +21,9 @@ A frontend-only single-page application for simulating deckbuilding experiences,
 | `pnpm build` | TypeScript compile + Vite build |
 | `pnpm test` | Run vitest tests |
 | `pnpm test:e2e` | Run Playwright E2E tests |
-| `pnpm test:e2e:ui` | Run E2E tests with UI mode |
-| `pnpm test:e2e:debug` | Run E2E tests in debug mode |
 | `pnpm lint` | ESLint check |
 | `pnpm lint:fix` | Auto-fix ESLint issues |
 | `pnpm format` | Format with Prettier |
-
-### Anchor comments
-Use `AIDEV-NOTE / TODO / QUESTION`, concise (≤120 chars). Never delete without human OK.
-- **Important:** Before scanning files, always first try to **locate existing anchors** `AIDEV-*` in relevant subdirectories.  
-- **Update relevant anchors** when modifying associated code.
 
 
 ## Features, Components, and State

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Player } from '@/features/player/types';
 import { Zone, CardInstance } from '@/features/cards/types';
-import { CardZone } from './zones/CardZone';
+import { CardZone } from './CardZone';
 import { CardActionHandlers } from '@/types/ui';
-import { DeckComposition } from './DeckComposition';
+import { PlayerDeckComposition } from './PlayerDeckComposition';
 import usePlayerStore from '@/store/player-store';
 
 interface PlayerCardProps {
@@ -123,7 +123,9 @@ export function PlayerCard({
       </div>
 
       {/* Deck Composition Section */}
-      {showDeckComposition && <DeckComposition allCards={player.allCards} />}
+      {showDeckComposition && (
+        <PlayerDeckComposition allCards={player.allCards} />
+      )}
 
       {/* Player Actions */}
       <div className="mt-4 flex gap-2">

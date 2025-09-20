@@ -1,11 +1,13 @@
 import React from 'react';
 import { CardInstance } from '@/features/cards/types';
 
-interface DeckCompositionProps {
+interface PlayerDeckCompositionProps {
   allCards: CardInstance[];
 }
 
-export function DeckComposition({ allCards }: DeckCompositionProps) {
+export function PlayerDeckComposition({
+  allCards,
+}: PlayerDeckCompositionProps) {
   const getCardCounts = (cards: CardInstance[]): Record<string, number> => {
     return cards.reduce(
       (counts, card) => {
