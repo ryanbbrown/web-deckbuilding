@@ -44,6 +44,34 @@ export const createYWebsocketServer = async ({
 }) => {
   checkPermCallbackUrl += checkPermCallbackUrl.slice(-1) !== '/' ? '/' : ''
   const app = uws.App({})
+
+  // Add auth token endpoint that proxies to auth server
+  app.get('/auth/token', async (res, req) => {
+    let aborted = false
+    res.onAborted(() => {
+      aborted = true
+    })
+    try {
+      const response = await fetch('http://127.0.0.1:5173/auth/token')
+      const token = await response.text()
+      if (!aborted) {
+        res.cork(() => {
+          res.writeStatus('200 OK')
+          res.writeHeader('Content-Type', 'text/plain')
+          res.end(token)
+        })
+      }
+    } catch (error) {
+      console.error('Error fetching auth token:', error)
+      if (!aborted) {
+        res.cork(() => {
+          res.writeStatus('500 Internal Server Error')
+          res.end('Error generating token')
+        })
+      }
+    }
+  })
+
   await registerYWebsocketServer(app, '/:room', store, async (req) => {
     const room = req.getParameter(0)
     const headerWsProtocol = req.getHeader('sec-websocket-protocol')
