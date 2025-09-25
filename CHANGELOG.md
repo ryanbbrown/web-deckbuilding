@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.13.0]() (2025-09-25)
+
+refactor: cleaner y-redis subtree + new readme (#17)
+
+
+* refactor: cleaner y-redis subtree + new readme (#17) ([4529029](https://github.com/ryanbbrown/web-deckbuilding/commit/4529029)), closes [#17](https://github.com/ryanbbrown/web-deckbuilding/issues/17)
+* refactor: colocate components in feature directories ([5e30ad6](https://github.com/ryanbbrown/web-deckbuilding/commit/5e30ad6))
+* refactor: colocate components in feature directories (#16) ([1ff2a7f](https://github.com/ryanbbrown/web-deckbuilding/commit/1ff2a7f)), closes [#16](https://github.com/ryanbbrown/web-deckbuilding/issues/16)
+* refactor: moved old y-redis folder, added linting ignore ([14efb86](https://github.com/ryanbbrown/web-deckbuilding/commit/14efb86))
+* chore: remove archive files ([e094201](https://github.com/ryanbbrown/web-deckbuilding/commit/e094201))
+* feat: y-redis working with necessary fly.io changes ([cae2aa9](https://github.com/ryanbbrown/web-deckbuilding/commit/cae2aa9))
+* Merge commit 'a065f4e99ccd1cd547bd3799bb35738b9c0ce8d4' as 'y-redis' ([c476809](https://github.com/ryanbbrown/web-deckbuilding/commit/c476809))
+* Squashed 'y-redis/' content from commit 61a13e4 ([a065f4e](https://github.com/ryanbbrown/web-deckbuilding/commit/a065f4e))
+* docs: updated readme with architecture ([1b394dc](https://github.com/ryanbbrown/web-deckbuilding/commit/1b394dc))
+
 ## [0.12.0]() (2025-09-19)
 
 feat: basic y-redis functionality in subtree (#15)
