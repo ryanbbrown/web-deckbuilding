@@ -9,7 +9,8 @@
 
 # Use an official Node.js runtime as a parent image
 # FROM node:20-alpine
-FROM node:20-bullseye
+# FROM node:20-bullseye
+FROM public.ecr.aws/docker/library/node:20-bullseye
 
 # Install glibc compatibility for alpine
 # See more at https://wiki.alpinelinux.org/wiki/Running_glibc_programs
