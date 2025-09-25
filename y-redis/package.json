@@ -11,10 +11,10 @@
   "scripts": {
     "dev": "concurrently -r 'npm run start:server' 'npm run start:worker' 'npm run minio'",
     "start:server": "node --env-file .env ./bin/server.js",
-    "start:both": "concurrently -r 'node ./bin/auth-server-example.js' 'node ./bin/server.js'",
     "debug:server": "node --env-file .env --inspect-brk ./bin/worker.js ./bin/server.js",
     "start:worker": "node --env-file .env ./bin/worker.js",
     "debug:worker": "node --env-file .env --inspect-brk ./bin/worker.js",
+    "start:both": "concurrently -r 'node ./bin/auth-server-example.js' 'node ./bin/server.js'",
     "minio": "docker run -p 9000:9000 -p 9001:9001 quay.io/minio/minio server /data --console-address \":9001\"",
     "redis": "docker run -p 6379:6379 redis",
     "dist": "tsc",
