@@ -1,4 +1,0 @@
-.env
-.env.backup*
-node_modules
-dist
