@@ -20,8 +20,12 @@ import {
   incrementTurns,
 } from '../features/player/services/player-service';
 
-interface PlayerState extends Record<string, unknown> {
+export interface PlayerState extends Record<string, unknown> {
   players: Record<string, Player>;
+
+  // Multiplayer state
+  roomId: string | null;
+  isConnected: boolean;
 
   // CRUD actions
   addPlayer: (player: Player) => void;
@@ -82,6 +86,10 @@ const usePlayerStore = create<PlayerState>()(
       (set, get) => ({
         players: {},
 
+        // Multiplayer state
+        roomId: null,
+        isConnected: false,
+
         // CRUD actions
         addPlayer: (player) => {
           set((state) => ({
@@ -112,7 +120,11 @@ const usePlayerStore = create<PlayerState>()(
         },
 
         reset: () => {
-          set({ players: {} });
+          set({
+            players: {},
+            roomId: null,
+            isConnected: false,
+          });
         },
 
         // Selectors

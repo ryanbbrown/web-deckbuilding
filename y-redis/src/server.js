@@ -45,12 +45,29 @@ export const createYWebsocketServer = async ({
   checkPermCallbackUrl += checkPermCallbackUrl.slice(-1) !== '/' ? '/' : ''
   const app = uws.App({})
 
+  // Add CORS headers for all requests
+  const addCorsHeaders = (res) => {
+    res.writeHeader('Access-Control-Allow-Origin', '*')
+    res.writeHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+    res.writeHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
+  }
+
+  // Handle preflight OPTIONS requests
+  app.options('/*', (res, req) => {
+    addCorsHeaders(res)
+    res.writeStatus('200 OK')
+    res.end()
+  })
+
   // Add auth token endpoint that proxies to auth server
   app.get('/auth/token', async (res, req) => {
     let aborted = false
     res.onAborted(() => {
       aborted = true
     })
+
+    addCorsHeaders(res)
+
     try {
       const response = await fetch('http://127.0.0.1:5173/auth/token')
       const token = await response.text()
