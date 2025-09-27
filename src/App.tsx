@@ -13,7 +13,6 @@ import { PlayersSection } from '@/features/player/components/PlayersSection';
 import { AddCardModal } from '@/features/market/components/AddCardModal';
 import { BulkAddCardModal } from '@/features/market/components/BulkAddCardModal';
 import { CardContextMenu } from '@/features/cards/components/CardContextMenu';
-import MultiplayerControls from '@/components/MultiplayerControls';
 import './App.css';
 
 function App() {
@@ -430,9 +429,6 @@ function App() {
 
         {/* Header */}
         <GameHeader game={game} playersCount={players.length} />
-
-        {/* Multiplayer Controls */}
-        <MultiplayerControls />
 
         {/* Deck Composition Selection Banner */}
         {isSelectingDeckComposition && (

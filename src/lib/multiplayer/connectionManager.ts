@@ -1,6 +1,5 @@
 import * as Y from 'yjs';
 import { WebsocketProvider } from 'y-websocket';
-import { v4 as uuidv4 } from 'uuid';
 import { attachShared, initializeDoc, type SharedDoc } from './yjsSchema';
 
 export interface ConnectionConfig {
@@ -51,7 +50,14 @@ export const connectRoom = ({
 };
 
 export const createNewRoomId = (): string => {
-  return uuidv4();
+  // Generate a 6-character alphanumeric room code (case-insensitive)
+  // Using only uppercase letters and numbers to avoid confusion
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Removed confusing characters like 0/O, 1/I
+  let roomId = '';
+  for (let i = 0; i < 6; i++) {
+    roomId += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return roomId;
 };
 
 const AUTH_SERVER_URL =
