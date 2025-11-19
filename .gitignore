@@ -7,6 +7,7 @@ dev-dist
 .env
 src/styles.css
 prompts/
+tests/smoke/
 
 # Playwright
 /test-results/
