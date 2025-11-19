@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [0.14.0]() (2025-11-19)
+
+fix: use separate deploy tokens for prod and dev fly deployments (#21)
+
+
+* Merge pull request #22 from ryanbbrown/develop ([468fd4e](https://github.com/ryanbbrown/web-deckbuilding/commit/468fd4e)), closes [#22](https://github.com/ryanbbrown/web-deckbuilding/issues/22)
+* fix: dev deploy to fly (#20) ([d77a281](https://github.com/ryanbbrown/web-deckbuilding/commit/d77a281)), closes [#20](https://github.com/ryanbbrown/web-deckbuilding/issues/20)
+* fix: fly deploy action to dev + removing smoke tests ([6e71154](https://github.com/ryanbbrown/web-deckbuilding/commit/6e71154))
+* fix: multiplayer working without command loop ([df6cb74](https://github.com/ryanbbrown/web-deckbuilding/commit/df6cb74))
+* fix: use separate deploy tokens for prod and dev fly deployments ([047a06d](https://github.com/ryanbbrown/web-deckbuilding/commit/047a06d))
+* fix: use separate deploy tokens for prod and dev fly deployments (#21) ([e57a50c](https://github.com/ryanbbrown/web-deckbuilding/commit/e57a50c)), closes [#21](https://github.com/ryanbbrown/web-deckbuilding/issues/21)
+* feat: multiplayer rooms with y-redis integration (#19) ([b02cc2f](https://github.com/ryanbbrown/web-deckbuilding/commit/b02cc2f)), closes [#19](https://github.com/ryanbbrown/web-deckbuilding/issues/19)
+* chore: prompts folder to gitignore ([98d3b58](https://github.com/ryanbbrown/web-deckbuilding/commit/98d3b58))
+* ci: added dev app to fly deploy github action ([da3abeb](https://github.com/ryanbbrown/web-deckbuilding/commit/da3abeb))
+* test: e2e testing for multiplayer features ([9534100](https://github.com/ryanbbrown/web-deckbuilding/commit/9534100))
+* style: improved multiplayer control ui ([f394a30](https://github.com/ryanbbrown/web-deckbuilding/commit/f394a30))
+* wip: basic multiplayer tentatively working on localhost ([a52013a](https://github.com/ryanbbrown/web-deckbuilding/commit/a52013a))
+* wip: up to c1.5 on the multiplayer plan ([5da9577](https://github.com/ryanbbrown/web-deckbuilding/commit/5da9577))
+* docs: added plan for multiplayer feature ([a5c75fa](https://github.com/ryanbbrown/web-deckbuilding/commit/a5c75fa))
+
 ## [0.13.0]() (2025-09-25)
 
 refactor: cleaner y-redis subtree + new readme (#17)
