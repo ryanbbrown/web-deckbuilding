@@ -108,6 +108,10 @@ export class Api {
      * Minimum lifetime of y* update messages in redis streams.
      */
     this.redisMinMessageLifetime = number.parseInt(env.getConf('redis-min-message-lifetime') || '60000') // default: 1 minute
+    /**
+     * TTL for room streams in seconds (default: 7 days)
+     */
+    this.redisRoomTTL = number.parseInt(env.getConf('redis-room-ttl') || String(7 * 24 * 60 * 60)) // default: 7 days
     this.redisWorkerStreamName = this.prefix + ':worker'
     this.redisWorkerGroupName = this.prefix + ':worker'
     this._destroyed = false
@@ -123,6 +127,7 @@ export class Api {
               redis.call("XREADGROUP", "GROUP", "${this.redisWorkerGroupName}", "pending", "STREAMS", "${this.redisWorkerStreamName}", ">")
             end
             redis.call("XADD", KEYS[1], "*", "m", ARGV[1])
+            redis.call("EXPIRE", KEYS[1], ${this.redisRoomTTL})
           `,
           /**
            * @param {string} key
@@ -187,6 +192,11 @@ export class Api {
         lastId: array.last(stream.messages).id.toString()
       })
     })
+    // If no messages received (timeout), add a small delay to avoid hammering Redis with commands
+    // This is important for per-command pricing (like Upstash)
+    if (reads == null || reads.length === 0) {
+      await promise.wait(100)
+    }
     return res
   }
 
@@ -262,7 +272,31 @@ export class Api {
      * @type {Array<{stream: string, id: string}>}
      */
     const tasks = []
-    const reclaimedTasks = await this.redis.xAutoClaim(this.redisWorkerStreamName, this.redisWorkerGroupName, this.consumername, this.redisTaskDebounce, '0', { COUNT: tryClaimCount })
+    let reclaimedTasks
+    try {
+      reclaimedTasks = await this.redis.xAutoClaim(this.redisWorkerStreamName, this.redisWorkerGroupName, this.consumername, this.redisTaskDebounce, '0', { COUNT: tryClaimCount })
+    } catch (e) {
+      // If consumer group doesn't exist, try to create it
+      if (e.message && e.message.includes('NOGROUP')) {
+        logWorker('Consumer group does not exist, attempting to create it...')
+        try {
+          await this.redis.xGroupCreate(this.redisWorkerStreamName, this.redisWorkerGroupName, '0', { MKSTREAM: true })
+          logWorker('Consumer group created successfully')
+          // Retry the claim after creating the group
+          reclaimedTasks = await this.redis.xAutoClaim(this.redisWorkerStreamName, this.redisWorkerGroupName, this.consumername, this.redisTaskDebounce, '0', { COUNT: tryClaimCount })
+        } catch (createErr) {
+          // If group already exists (race condition with another worker), that's fine, just continue
+          if (!createErr.message || !createErr.message.includes('BUSYGROUP')) {
+            logWorker('Failed to create consumer group:', createErr)
+          }
+          await promise.wait(1000)
+          return []
+        }
+      } else {
+        // Some other error, re-throw it
+        throw e
+      }
+    }
     reclaimedTasks.messages.forEach(m => {
       const stream = m?.message.compact
       stream && tasks.push({ stream, id: m?.id })
@@ -308,6 +342,7 @@ export class Api {
           // This issue is not critical, as no data will be lost if this happens.
           this.redis.multi()
             .xTrim(task.stream, 'MINID', lastId - this.redisMinMessageLifetime)
+            .expire(task.stream, this.redisRoomTTL) // Reset TTL after compaction
             .xAdd(this.redisWorkerStreamName, '*', { compact: task.stream })
             .xReadGroup(this.redisWorkerGroupName, 'pending', { key: this.redisWorkerStreamName, id: '>' }, { COUNT: 50 }) // immediately claim this entry, will be picked up by worker after timeout
             .xDel(this.redisWorkerStreamName, task.id)
@@ -357,6 +392,8 @@ export class Worker {
           await client.consumeWorkerQueue(opts)
         } catch (e) {
           console.error(e)
+          // Add delay to prevent rapid error loops
+          await promise.wait(1000)
         }
       }
       logWorker('Ended worker process ', { id: client.consumername })

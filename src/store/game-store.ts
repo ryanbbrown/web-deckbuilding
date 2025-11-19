@@ -10,15 +10,25 @@ import {
 } from '../features/game/services/game-service';
 import useMarketStore from './market-store';
 import usePlayerStore from './player-store';
+import { multiplayerManager } from '../lib/multiplayer/multiplayerManager';
 
-interface GameState extends Record<string, unknown> {
+export interface GameState extends Record<string, unknown> {
   game: Game | null;
+
+  // Multiplayer state
+  roomId: string | null;
+  isConnected: boolean;
 
   // Actions
   createGame: () => void;
   setStartingDeckComposition: (composition: Record<string, number>) => void;
   setStartingHandSize: (size: number) => void;
   reset: () => void;
+
+  // Multiplayer actions
+  createRoom: () => Promise<string>;
+  joinRoom: (roomId: string) => Promise<void>;
+  leaveRoom: () => void;
 
   // Coordination actions
   addCardToMarket: (cardDefinition: CardDefinition) => void;
@@ -39,6 +49,10 @@ const useGameStore = create<GameState>()(
     logger<GameState>(
       (set, get) => ({
         game: null,
+
+        // Multiplayer state
+        roomId: null,
+        isConnected: false,
 
         createGame: () => {
           set({
@@ -137,6 +151,50 @@ const useGameStore = create<GameState>()(
           }
 
           return result.success;
+        },
+
+        // Multiplayer actions
+        createRoom: async () => {
+          // Initialize multiplayer manager with all stores
+          multiplayerManager.setStores({
+            gameStore: useGameStore,
+            marketStore: useMarketStore,
+            playerStore: usePlayerStore,
+          });
+
+          const roomId = await multiplayerManager.createRoom();
+
+          set({
+            roomId,
+            isConnected: true,
+          });
+
+          return roomId;
+        },
+
+        joinRoom: async (roomId: string) => {
+          // Initialize multiplayer manager with all stores
+          multiplayerManager.setStores({
+            gameStore: useGameStore,
+            marketStore: useMarketStore,
+            playerStore: usePlayerStore,
+          });
+
+          await multiplayerManager.joinRoom(roomId);
+
+          set({
+            roomId,
+            isConnected: true,
+          });
+        },
+
+        leaveRoom: () => {
+          multiplayerManager.leaveRoom();
+
+          set({
+            roomId: null,
+            isConnected: false,
+          });
         },
 
         // Selectors
