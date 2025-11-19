@@ -7,6 +7,7 @@ app = "web-deckbuilding-yredis-worker"
 primary_region = "iad"
 
 [build]
+  dockerfile = "Dockerfile"
 
 # This app exposes NO services; it's a background worker.
 # Fly Machines will keep it running as long as the command below stays alive.

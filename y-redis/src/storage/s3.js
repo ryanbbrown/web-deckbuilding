@@ -29,7 +29,7 @@ export const createS3Storage = (bucketName) => {
     useSSL,
     accessKey,
     secretKey,
-    region,
+    region
   })
 }
 
