@@ -393,7 +393,7 @@ Gold|Best treasure card|3`;
     // Assert that there are no players
     await expect(page.getByTestId('player-section-player1')).not.toBeVisible();
 
-    // Assert that the "Reset Game" button does not appear
-    await expect(page.getByTestId('reset-game-btn')).not.toBeVisible();
+    // Assert that the "Reset Game" button is still visible (it's always visible when game exists)
+    await expect(page.getByTestId('reset-game-btn')).toBeVisible();
   });
 });

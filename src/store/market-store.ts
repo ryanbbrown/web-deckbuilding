@@ -3,8 +3,13 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { logger } from './logger';
 import { CardDefinition } from '../features/cards/types';
 
-interface MarketState extends Record<string, unknown> {
+export interface MarketState extends Record<string, unknown> {
   catalog: CardDefinition[];
+
+  // Multiplayer state
+  roomId: string | null;
+  isConnected: boolean;
+
   addCardDefinition: (cardDefinition: CardDefinition) => void;
   addMultipleCardDefinitions: (cardDefinitions: CardDefinition[]) => void;
   removeCardDefinition: (cardDefinition: CardDefinition) => void;
@@ -18,6 +23,10 @@ const useMarketStore = create<MarketState>()(
     logger<MarketState>(
       (set, get) => ({
         catalog: [],
+
+        // Multiplayer state
+        roomId: null,
+        isConnected: false,
 
         addCardDefinition: (cardDefinition) => {
           set((state) => ({
@@ -38,7 +47,11 @@ const useMarketStore = create<MarketState>()(
         },
 
         reset: () => {
-          set({ catalog: [] });
+          set({
+            catalog: [],
+            roomId: null,
+            isConnected: false,
+          });
         },
 
         hasCardDefinition: (cardDefinition) => {
