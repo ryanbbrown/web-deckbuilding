@@ -46,6 +46,9 @@ export const createYWebsocketServer = async ({
   const app = uws.App({})
 
   // Add CORS headers for all requests
+  /**
+   * @param {uws.HttpResponse} res
+   */
   const addCorsHeaders = (res) => {
     res.writeHeader('Access-Control-Allow-Origin', '*')
     res.writeHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
@@ -57,6 +60,15 @@ export const createYWebsocketServer = async ({
     addCorsHeaders(res)
     res.writeStatus('200 OK')
     res.end()
+  })
+
+  // Health check endpoint for Fly.io
+  app.get('/health', (res, req) => {
+    res.cork(() => {
+      res.writeStatus('200 OK')
+      res.writeHeader('Content-Type', 'text/plain')
+      res.end('OK')
+    })
   })
 
   // Add auth token endpoint that proxies to auth server

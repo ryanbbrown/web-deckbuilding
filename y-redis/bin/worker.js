@@ -8,15 +8,19 @@ const redisPrefix = env.getConf('redis-prefix') || 'y'
 const postgresUrl = env.getConf('postgres')
 const s3Endpoint = env.getConf('s3-endpoint')
 
+/**
+ * @type {import('../src/storage.js').AbstractStorage}
+ */
 let store
 if (s3Endpoint) {
   console.log('using s3 store')
   const { createS3Storage } = await import('../src/storage/s3.js')
   const bucketName = 'ydocs'
-  store = createS3Storage(bucketName)
+  const s3Store = createS3Storage(bucketName)
+  store = s3Store
   try {
     // make sure the bucket exists
-    await store.client.makeBucket(bucketName)
+    await s3Store.client.makeBucket(bucketName)
   } catch (e) {}
 } else if (postgresUrl) {
   console.log('using postgres store')
@@ -50,6 +54,23 @@ const updateCallback = async (room, ydoc) => {
   }
 }
 
-yredis.createWorker(store, redisPrefix, {
+const worker = await yredis.createWorker(store, redisPrefix, {
   updateCallback
 })
+
+// Gracefully shut down the worker when running in Docker/Fly.io
+process.on('SIGTERM', shutDown)
+process.on('SIGINT', shutDown)
+
+async function shutDown () {
+  console.log('[y-redis-worker] Received SIGTERM/SIGINT - shutting down gracefully')
+  try {
+    await worker.client.destroy()
+    await store.destroy()
+    console.log('[y-redis-worker] Cleanup complete')
+    process.exit(0)
+  } catch (e) {
+    console.error('[y-redis-worker] Error during shutdown:', e)
+    process.exit(1)
+  }
+}
