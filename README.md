@@ -1,6 +1,6 @@
 # Web Deckbuilding
 
-web-deckbuilding is a real-time multiplayer deckbuilding sandbox. You can access it at [web-deckbuilding.fly.dev](https://web-deckbuilding.fly.dev/). It features collaborative gameplay powered by Yjs and y-redis, with real-time state synchronization across multiple players. I built it to help me quickly iterate on the board game I'm creating; there weren't any suitable digital solutions so I had to make physical cards, which took a lot longer.
+web-deckbuilding is a real-time multiplayer deckbuilding sandbox. You can access it at [web-deckbuilding.fly.dev](https://web-deckbuilding.fly.dev/). It features collaborative gameplay powered by Yjs and y-redis, with real-time state synchronization across multiple players. I built it to help me quickly iterate on the board game I'm creating; there weren't any suitable digital solutions so I was previously making physical cards, which took a lot longer.
 
 <p align="center">
   <img src="screenshot.png" alt="Web Deckbuilding Screenshot" width="50%">
@@ -269,7 +269,8 @@ yObserver() → if (txn.origin !== ORIGIN)
 
 **1. Frontend + Single Player (`web-deckbuilding` / `web-deckbuilding-dev`)**
 - **Config**: `fly.toml`
-- **Command**: Vite production build served statically
+- **Build**: `pnpm run build` (builds static assets via Vite)
+- **Runtime**: Static files served via nginx
 - **Description**: React SPA with all single-player game logic and frontend code; GitHub Actions auto-deploys to `web-deckbuilding` on push to `main` or `web-deckbuilding-dev` on push to `develop`
 
 **2. y-redis Server (`web-deckbuilding-yredis`)**
@@ -284,11 +285,42 @@ yObserver() → if (txn.origin !== ORIGIN)
 
 ### 3.2 External Services
 
-**Upstash Redis**: Managed Redis instance integrated via Fly.io secrets, eliminating the need to self-host Redis infrastructure for real-time message distribution and temporary state storage.
+- **Upstash Redis**: Managed Redis instance integrated via Fly.io secrets, eliminating the need to self-host Redis infrastructure for real-time message distribution and temporary state storage.
 
-**Tigris Storage**: S3-compatible object storage service integrated via Fly.io, used for permanent Yjs document persistence to keep all infrastructure within the Fly.io ecosystem.
+- **Tigris Storage**: S3-compatible object storage service integrated via Fly.io, used for permanent Yjs document persistence to keep all infrastructure within the Fly.io ecosystem.
 
-### 3.3 Deployment Pipeline
+### 3.3 Environment Variables & Secrets
+
+**Frontend Environment Variables**
+- **Local Development**: Copy `.env.example` to `.env` and configure for local development. Vite automatically reads these variables during `pnpm dev`.
+- **Production (Fly.io)**: Environment variables are configured in `fly.toml` under `[build.args]` section. These are passed as Docker build arguments and baked into the JavaScript bundle at build time by Vite (see `Dockerfile:35-38`).
+
+**y-redis Server & Worker Secrets**
+
+Both `web-deckbuilding-yredis` (server) and `web-deckbuilding-yredis-worker` (worker) require the same secrets. Run each command twice: once with `-a web-deckbuilding-yredis` and once with `-a web-deckbuilding-yredis-worker`:
+```bash
+# Redis connection (Upstash Redis)
+fly secrets set REDIS=redis://default:xxx@xxx.upstash.io:6379 -a [app]
+
+# S3 storage (Tigris)
+fly secrets set S3_ACCESS_KEY=xxx -a [app]
+fly secrets set S3_SECRET_KEY=xxx -a [app]
+fly secrets set S3_BUCKET=xxx -a [app]
+fly secrets set S3_ENDPOINT=fly.storage.tigris.dev -a [app]
+fly secrets set S3_REGION=auto -a [app]
+fly secrets set S3_PORT=443 -a [app]
+fly secrets set S3_SSL=true -a [app]
+
+# JWT authentication (generate with openssl or similar)
+fly secrets set AUTH_PUBLIC_KEY="-----BEGIN PUBLIC KEY-----\nxxx\n-----END PUBLIC KEY-----" -a [app]
+fly secrets set AUTH_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\nxxx\n-----END PRIVATE KEY-----" -a [app]
+fly secrets set AUTH_PERM_CALLBACK=http://127.0.0.1:5173/auth/perm -a [app]
+
+# Optional: Redis room TTL in seconds (default: 604800 = 7 days; y-redis/src/api.js:114)
+fly secrets set REDIS_ROOM_TTL=86400 -a [app]  # Example: 1 day
+```
+
+### 3.4 Deployment Pipeline
 
 **App Deployment:**
 GitHub Actions (`.github/workflows/fly-deploy.yml`) automatically deploys the frontend on push to `main` or `develop` branches. Uses separate Fly.io API deploy tokens (`FLY_API_TOKEN` for production, `DEV_FLY_API_TOKEN` for dev) with remote builds on Fly.io infrastructure.
