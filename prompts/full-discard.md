@@ -1,3 +1,0 @@
-Please add a new feature that toggles the player's ability to see only the top card in their discard vs. all cards in their discard pile. The current state is that it only shows the top card. When toggled to show all, the cards within it should appear the same as cards appear within play area or hand.
-
-I believe this feature should only require front-end changes; just a change to the discard zone component? I want a button in a corner somewhere that says "show all cards" when only one is showing and "show top card" when all cards are showing. Based on the structure of the CardZone component, would be good to get your input on where the toggle button should go.

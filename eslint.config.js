@@ -89,7 +89,7 @@ export default [
   },
 
   {
-    ignores: ['node_modules', 'dist', 'dev-dist', 'y-redis'],
+    ignores: ['node_modules', 'dist', 'dev-dist', 'y-redis', 'tests/smoke'],
   },
 
   prettier,
