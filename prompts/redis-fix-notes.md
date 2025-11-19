@@ -1,2 +1,0 @@
-- added shutdown for the server and worker (SIGTERM and SIGINT) 
-- 
