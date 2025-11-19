@@ -8,6 +8,7 @@ app = "web-deckbuilding-yredis"
 primary_region = "iad"
 
 [build]
+  dockerfile = "Dockerfile"
 
 [env]
   # y-redis server listens here
@@ -35,6 +36,15 @@ primary_region = "iad"
   [[services.ports]]
     port = 80
     handlers = ["http"]
+
+  # HTTP health checks
+  [[services.http_checks]]
+    interval = "15s"
+    timeout = "2s"
+    grace_period = "10s"
+    method = "GET"
+    path = "/health"
+    protocol = "http"
 
 [[vm]]
   memory = "1gb"

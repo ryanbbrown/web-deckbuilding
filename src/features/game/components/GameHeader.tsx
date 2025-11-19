@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Game } from '@/features/game/types';
 import useGameStore from '@/store/game-store';
 import Button from '@/ui/button';
+import CompactMultiplayerControls from '@/components/CompactMultiplayerControls';
 
 interface GameHeaderProps {
   game: Game | null;
@@ -18,25 +19,6 @@ export function GameHeader({ game, playersCount }: GameHeaderProps) {
         0
       )
     : 0;
-
-  const isInitialState = (game: Game | null): boolean => {
-    if (!game) return true;
-
-    // Check if game state differs from initial state
-    const hasPlayers = playersCount > 0;
-    const hasMarketCards = game.market?.catalog?.length > 0;
-    const hasDeckComposition =
-      game.startingDeckComposition !== null &&
-      Object.keys(game.startingDeckComposition || {}).length > 0;
-    const hasNonDefaultHandSize = game.startingHandSize !== 5;
-
-    return (
-      !hasPlayers &&
-      !hasMarketCards &&
-      !hasDeckComposition &&
-      !hasNonDefaultHandSize
-    );
-  };
 
   const handleResetGame = () => {
     const { createGame } = useGameStore.getState();
@@ -64,14 +46,18 @@ export function GameHeader({ game, playersCount }: GameHeaderProps) {
               </p>
             )}
         </div>
-        {game && !isInitialState(game) && (
-          <Button
-            text="Reset Game"
-            onClick={() => setShowConfirmModal(true)}
-            className="inline-flex items-center justify-center rounded-md text-sm font-normal ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-red-500 text-white hover:bg-red-600 border border-red-500 hover:border-red-600 h-10 px-4 py-2"
-            data-testid="reset-game-btn"
-          />
-        )}
+
+        <div className="flex items-center gap-3">
+          <CompactMultiplayerControls />
+          {game && (
+            <Button
+              text="Reset Game"
+              onClick={() => setShowConfirmModal(true)}
+              className="inline-flex items-center justify-center rounded-md text-sm font-normal ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none bg-red-500 text-white hover:bg-red-600 border border-red-500 hover:border-red-600 h-10 px-4 py-2"
+              data-testid="reset-game-btn"
+            />
+          )}
+        </div>
       </div>
 
       {showConfirmModal && (
