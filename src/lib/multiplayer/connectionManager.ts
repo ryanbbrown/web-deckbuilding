@@ -60,10 +60,7 @@ export const createNewRoomId = (): string => {
   return roomId;
 };
 
-const AUTH_SERVER_URL =
-  typeof import.meta.env !== 'undefined' && import.meta.env.VITE_AUTH_SERVER_URL
-    ? String(import.meta.env.VITE_AUTH_SERVER_URL)
-    : 'https://web-deckbuilding-yredis.fly.dev';
+const AUTH_SERVER_URL = import.meta.env.VITE_AUTH_SERVER_URL;
 
 let cachedToken: string | null = null;
 let tokenExpiry: number | null = null;

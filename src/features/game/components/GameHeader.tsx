@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Game } from '@/features/game/types';
 import useGameStore from '@/store/game-store';
 import Button from '@/ui/button';
-import CompactMultiplayerControls from '@/components/CompactMultiplayerControls';
+import MultiplayerControls from '@/components/MultiplayerControls';
 
 interface GameHeaderProps {
   game: Game | null;
@@ -48,7 +48,7 @@ export function GameHeader({ game, playersCount }: GameHeaderProps) {
         </div>
 
         <div className="flex items-center gap-3">
-          <CompactMultiplayerControls />
+          <MultiplayerControls />
           {game && (
             <Button
               text="Reset Game"

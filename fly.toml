@@ -8,6 +8,10 @@ primary_region = 'iad'
 
 [build]
 
+[build.args]
+  VITE_YJS_SERVER_URL = "wss://web-deckbuilding-yredis.fly.dev"
+  VITE_AUTH_SERVER_URL = "https://web-deckbuilding-yredis.fly.dev"
+
 [http_service]
   internal_port = 80
   force_https = true

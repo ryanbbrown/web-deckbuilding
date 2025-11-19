@@ -51,7 +51,7 @@ class MultiplayerManager {
     const token = await getAuthToken();
 
     const connection = connectRoom({
-      serverUrl: 'wss://web-deckbuilding-yredis.fly.dev',
+      serverUrl: import.meta.env.VITE_YJS_SERVER_URL,
       roomId,
       token,
     });
@@ -87,7 +87,7 @@ class MultiplayerManager {
     const token = await getAuthToken();
 
     const connection = connectRoom({
-      serverUrl: 'wss://web-deckbuilding-yredis.fly.dev',
+      serverUrl: import.meta.env.VITE_YJS_SERVER_URL,
       roomId,
       token,
     });

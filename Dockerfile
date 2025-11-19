@@ -31,6 +31,12 @@ RUN pnpm install --frozen-lockfile --prod=false
 # Copy application code
 COPY . .
 
+# Accept build arguments and set as environment variables for Vite
+ARG VITE_YJS_SERVER_URL
+ARG VITE_AUTH_SERVER_URL
+ENV VITE_YJS_SERVER_URL=$VITE_YJS_SERVER_URL
+ENV VITE_AUTH_SERVER_URL=$VITE_AUTH_SERVER_URL
+
 # Build application
 RUN pnpm run build
 
