@@ -1,13 +1,13 @@
 name: CI Pipeline
 
 on:
-  # Run on pushes to main branch
+  # Run on pushes to main and develop branches
   push:
-    branches: [main]
-  
-  # Run on all pull requests
+    branches: [main, develop]
+
+  # Run on all pull requests targeting main or develop
   pull_request:
-    branches: [main]
+    branches: [main, develop]
   
   # Allow manual trigger
   workflow_dispatch:
@@ -51,12 +51,18 @@ jobs:
       
       - name: Build project
         run: pnpm build
+        env:
+          VITE_YJS_SERVER_URL: wss://web-deckbuilding-yredis.fly.dev
+          VITE_AUTH_SERVER_URL: https://web-deckbuilding-yredis.fly.dev
       
       - name: Install Playwright browsers
         run: pnpm exec playwright install --with-deps
       
       - name: Run E2E tests
         run: pnpm test:e2e
+        env:
+          VITE_YJS_SERVER_URL: wss://web-deckbuilding-yredis.fly.dev
+          VITE_AUTH_SERVER_URL: https://web-deckbuilding-yredis.fly.dev
       
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
