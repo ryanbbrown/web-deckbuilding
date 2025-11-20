@@ -3,7 +3,7 @@
 web-deckbuilding is a real-time multiplayer deckbuilding sandbox. You can access it at [web-deckbuilding.fly.dev](https://web-deckbuilding.fly.dev/). It features collaborative gameplay powered by Yjs and y-redis, with real-time state synchronization across multiple players. I built it to help me quickly iterate on the board game I'm creating; there weren't any suitable digital solutions so I was previously making physical cards, which took a lot longer.
 
 <p align="center">
-  <img src="screenshot.png" alt="Web Deckbuilding Screenshot" width="50%">
+  <img src="screenshot.png" alt="Web Deckbuilding Screenshot" width="80%">
 </p>
 
 It supports both single-player and multiplayer modes; **single-player** has fully local state management with localStorage persistance, while **multiplayer** allows for real-time collaborative gameplay using y-redis.
